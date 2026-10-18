@@ -23,7 +23,8 @@ services:
       - docpipe-data:/data
       - docpipe-data:/opt/app-root/data
       - docpipe-data:/opt/app-root/src/data
-      - ../corpus/documents:/documents:ro
+      - ../datasets/10-pdf-files/pdf:/documents:ro
+      - ../datasets/100-text-files/text:/text-documents:ro
     depends_on:
       ollama:
         condition: service_started

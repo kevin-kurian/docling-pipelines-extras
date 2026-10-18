@@ -1,11 +1,12 @@
-# Local workspace links
-/docling-pipelines
-
 # IDE files
 /.idea/
 
 # Local environment
 .env
 
-# Local corpus
-/corpus/
+# Workspace Files
+/docling-pipelines
+
+# Dataset Files
+/datasets/100-text-files/text/
+/datasets/10-pdf-files/pdf/

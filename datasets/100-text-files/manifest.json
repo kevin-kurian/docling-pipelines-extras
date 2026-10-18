@@ -1,0 +1,714 @@
+{
+  "source": {
+    "repo_id": "MohammadOthman/20-News-Groups",
+    "revision": "e7372c450f16b5804b31eac635acf46ea6823936",
+    "archive": "20newsbydate.zip"
+  },
+  "summary": {
+    "documents": 100,
+    "bytes": 185154,
+    "topics": 20
+  },
+  "files": [
+    {
+      "source": "20newsbydate/20news-bydate-train/alt.atheism/53763",
+      "path": "text/alt.atheism__53763.txt",
+      "bytes": 756,
+      "sha256": "84022ec7c9a8cf9951303a81694b2a3aea0fc4092e1039c905201b45264fb50b",
+      "topic": "alt.atheism"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/alt.atheism/53132",
+      "path": "text/alt.atheism__53132.txt",
+      "bytes": 1012,
+      "sha256": "75fc76c87f3ee5e6bed3225b0e056da170ecf965dc51db2cc83c0b1f59516643",
+      "topic": "alt.atheism"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/alt.atheism/54180",
+      "path": "text/alt.atheism__54180.txt",
+      "bytes": 4508,
+      "sha256": "88e276f766c51291d83d6c4e38acf0f89832bb92329fd1a49e36b32acc7c5463",
+      "topic": "alt.atheism"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/alt.atheism/51182",
+      "path": "text/alt.atheism__51182.txt",
+      "bytes": 2275,
+      "sha256": "a3f6ada45f78849a7385252ef6d46b1f1d59a5644a9ffc7a3d3336e4a5d4f443",
+      "topic": "alt.atheism"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/alt.atheism/53161",
+      "path": "text/alt.atheism__53161.txt",
+      "bytes": 3539,
+      "sha256": "f3ba860a8867e3d2f20192fd15ae97b68f85ee5e7da983933047266e30e454da",
+      "topic": "alt.atheism"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.graphics/37938",
+      "path": "text/comp.graphics__37938.txt",
+      "bytes": 500,
+      "sha256": "72c2a9580601fd7dde838d0a8a1f330db26050cdc237f9e4d5f22508da92120d",
+      "topic": "comp.graphics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.graphics/38256",
+      "path": "text/comp.graphics__38256.txt",
+      "bytes": 380,
+      "sha256": "2fc5d724865f0a215488a99e7a6a9a64604e8393342491cc2dd98aae4e9da4f2",
+      "topic": "comp.graphics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.graphics/38676",
+      "path": "text/comp.graphics__38676.txt",
+      "bytes": 455,
+      "sha256": "91894f4f8f5f13fb4af6e5d7166b5f573746ff73715f5bb42c80e3d613d70807",
+      "topic": "comp.graphics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.graphics/38398",
+      "path": "text/comp.graphics__38398.txt",
+      "bytes": 809,
+      "sha256": "3cbf6f219ccf54f09e27088f654a36122bc768252d0a74bc95bd0b1b1f7108a8",
+      "topic": "comp.graphics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.graphics/38275",
+      "path": "text/comp.graphics__38275.txt",
+      "bytes": 384,
+      "sha256": "3cbe8c867df3d3fd57b73aed67513b57340b4f12c93d7afb60ef2c1512d93589",
+      "topic": "comp.graphics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.os.ms-windows.misc/9153",
+      "path": "text/comp.os.ms-windows.misc__9153.txt",
+      "bytes": 1177,
+      "sha256": "5ff93938333ff07e71214a720a89f6a0a9d2d54c7040bdaa5957d19d6144c07a",
+      "topic": "comp.os.ms-windows.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.os.ms-windows.misc/9561",
+      "path": "text/comp.os.ms-windows.misc__9561.txt",
+      "bytes": 368,
+      "sha256": "8f2d98198cd9839197f907d6c768876bdc80abdfacfe0972e579b777f550ccf0",
+      "topic": "comp.os.ms-windows.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.os.ms-windows.misc/9709",
+      "path": "text/comp.os.ms-windows.misc__9709.txt",
+      "bytes": 963,
+      "sha256": "1db85122e5d5764576b85e6b25d017aa98c05dabfe6d436cdd0c4fd16d0f7640",
+      "topic": "comp.os.ms-windows.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.os.ms-windows.misc/9472",
+      "path": "text/comp.os.ms-windows.misc__9472.txt",
+      "bytes": 493,
+      "sha256": "e76d31adae63039b8a8a3bd8423d0270bc59a16c19291acb3303d3e5bcfa4fcc",
+      "topic": "comp.os.ms-windows.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.os.ms-windows.misc/9612",
+      "path": "text/comp.os.ms-windows.misc__9612.txt",
+      "bytes": 1096,
+      "sha256": "90ae49ca247b49005023a5e29005217b6e921f5dd069417751f6774639834763",
+      "topic": "comp.os.ms-windows.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/60579",
+      "path": "text/comp.sys.ibm.pc.hardware__60579.txt",
+      "bytes": 789,
+      "sha256": "a7c28e1d492eaf37164d4c4e70f1269ddedafc083d508bc2d35d5f5a4e47fce5",
+      "topic": "comp.sys.ibm.pc.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/60391",
+      "path": "text/comp.sys.ibm.pc.hardware__60391.txt",
+      "bytes": 833,
+      "sha256": "496a80e4c4f667270bff751b66f43d5c53cf8d6c1460fb258b7e1fe143d5ff4d",
+      "topic": "comp.sys.ibm.pc.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/60736",
+      "path": "text/comp.sys.ibm.pc.hardware__60736.txt",
+      "bytes": 474,
+      "sha256": "37d6e6c789c6aae226be4dbfb10d5afb00c45d4cf758e32233876c4314e7a8fd",
+      "topic": "comp.sys.ibm.pc.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/60202",
+      "path": "text/comp.sys.ibm.pc.hardware__60202.txt",
+      "bytes": 680,
+      "sha256": "8bf67a55c5d41f8f132eb040cce8bf570632a3cd1f6b51e09b5ca88419c0c2d5",
+      "topic": "comp.sys.ibm.pc.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/60730",
+      "path": "text/comp.sys.ibm.pc.hardware__60730.txt",
+      "bytes": 2617,
+      "sha256": "3fcbea4aa94a301460ec49bd6cf6d6146b033f96d7ac819461b9632fba840db2",
+      "topic": "comp.sys.ibm.pc.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.mac.hardware/51700",
+      "path": "text/comp.sys.mac.hardware__51700.txt",
+      "bytes": 838,
+      "sha256": "a55b0d3363cee2bc158bb7ff16691bd8b8cb6d817f364b0adbde70e8ff21a372",
+      "topic": "comp.sys.mac.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.mac.hardware/50489",
+      "path": "text/comp.sys.mac.hardware__50489.txt",
+      "bytes": 3041,
+      "sha256": "5a9469da531d4066d2ab04d32c32a449d5e1e637ee80236c850115b9716da22c",
+      "topic": "comp.sys.mac.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.mac.hardware/51530",
+      "path": "text/comp.sys.mac.hardware__51530.txt",
+      "bytes": 659,
+      "sha256": "4090f003ce45e02633b35e197a76e01b4c77bc32f3d7b375abf85e9d07bd9239",
+      "topic": "comp.sys.mac.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.mac.hardware/51596",
+      "path": "text/comp.sys.mac.hardware__51596.txt",
+      "bytes": 494,
+      "sha256": "ddb53258c00007c205410b2616dea37b547547cd17493f7c527552af7f011a86",
+      "topic": "comp.sys.mac.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.sys.mac.hardware/51867",
+      "path": "text/comp.sys.mac.hardware__51867.txt",
+      "bytes": 1253,
+      "sha256": "c1e09e7c36fde4b69653779d3a07ef2999ac6bc5834527d9bc5ae5d8f0a1af72",
+      "topic": "comp.sys.mac.hardware"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/67305",
+      "path": "text/comp.windows.x__67305.txt",
+      "bytes": 823,
+      "sha256": "0601e73e96afd4d1307d406730c2e936c7f64826913864430ac95fc369f6bb08",
+      "topic": "comp.windows.x"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/67262",
+      "path": "text/comp.windows.x__67262.txt",
+      "bytes": 1092,
+      "sha256": "9f34822503e9cd4663f5af77220c821fcfcdf2fe49c2396652f4666378083832",
+      "topic": "comp.windows.x"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/67353",
+      "path": "text/comp.windows.x__67353.txt",
+      "bytes": 1094,
+      "sha256": "6ec1d8db836f9490b6876c5fa3a39d77eaa635714aa9913e6097e15431d012cd",
+      "topic": "comp.windows.x"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/67372",
+      "path": "text/comp.windows.x__67372.txt",
+      "bytes": 1714,
+      "sha256": "386a3505b228abf0a4ea1512d7594596b97381c8dc7945f04875bcce8fb20bcc",
+      "topic": "comp.windows.x"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/64831",
+      "path": "text/comp.windows.x__64831.txt",
+      "bytes": 42848,
+      "sha256": "4a40cca9a06d5b4b411b316a8d340d8df3f24eef8e284a53f9d3b2e62b135f97",
+      "topic": "comp.windows.x"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/misc.forsale/76145",
+      "path": "text/misc.forsale__76145.txt",
+      "bytes": 1199,
+      "sha256": "a8977d1ce6e4078f796e65538d5df61b8e0e91fe8d78481121b3ae6baaf8a632",
+      "topic": "misc.forsale"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/misc.forsale/76039",
+      "path": "text/misc.forsale__76039.txt",
+      "bytes": 362,
+      "sha256": "639489e543cdbfaee5bc880446f2622702137e4951832f448b95deb40fe34c55",
+      "topic": "misc.forsale"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/misc.forsale/76141",
+      "path": "text/misc.forsale__76141.txt",
+      "bytes": 425,
+      "sha256": "79eecab155b6c2fee81cde77a461f3bc487d93f348d218ecdcef78caf589eff1",
+      "topic": "misc.forsale"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/misc.forsale/75868",
+      "path": "text/misc.forsale__75868.txt",
+      "bytes": 928,
+      "sha256": "c3123bc38873d080af037043074b0a3cdf94b69f6b6ad643eb9cb96cfdb6e46e",
+      "topic": "misc.forsale"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/misc.forsale/76225",
+      "path": "text/misc.forsale__76225.txt",
+      "bytes": 936,
+      "sha256": "07d15be39a65d5225dd26a2a9162fe263a1e0e6670a702a3b59b42fc166799d3",
+      "topic": "misc.forsale"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/103022",
+      "path": "text/rec.autos__103022.txt",
+      "bytes": 1751,
+      "sha256": "d63e395d6fdd3c9930f6e855338c65a769ea1b8a2e7fc65d1db8341907c3ae52",
+      "topic": "rec.autos"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/103241",
+      "path": "text/rec.autos__103241.txt",
+      "bytes": 730,
+      "sha256": "3cbfcc467064dd2b0b01990f70650a897b564ec502a90c188cc231b2cc921677",
+      "topic": "rec.autos"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/103107",
+      "path": "text/rec.autos__103107.txt",
+      "bytes": 1191,
+      "sha256": "f51820709960dfd38745f1ed1796ca41da389ec7a5283c48d631b7d6ce768c87",
+      "topic": "rec.autos"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/101587",
+      "path": "text/rec.autos__101587.txt",
+      "bytes": 690,
+      "sha256": "d69f83e47ab50d11c6b9483ec86b2648ed441cb53b72ff5db516484b0781e317",
+      "topic": "rec.autos"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/102743",
+      "path": "text/rec.autos__102743.txt",
+      "bytes": 984,
+      "sha256": "3722f490f34b93a9af23ec43ac8ff900a9a2de653f39d199793351c65e493fb3",
+      "topic": "rec.autos"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.motorcycles/104314",
+      "path": "text/rec.motorcycles__104314.txt",
+      "bytes": 554,
+      "sha256": "00249352d2ced81593612a16190ee69df8b18fad94c3baaf77d90bc3682a59d0",
+      "topic": "rec.motorcycles"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.motorcycles/104933",
+      "path": "text/rec.motorcycles__104933.txt",
+      "bytes": 1358,
+      "sha256": "d4dddf2a86097e51dd377c9bc48a8f47c1a1a690f7b2d87673c426cc8932f627",
+      "topic": "rec.motorcycles"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.motorcycles/104431",
+      "path": "text/rec.motorcycles__104431.txt",
+      "bytes": 1877,
+      "sha256": "f8094f3dbc8eb644a802a191f893fbb3c7e97155017ebcaf3cf9d75e88465342",
+      "topic": "rec.motorcycles"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.motorcycles/103122",
+      "path": "text/rec.motorcycles__103122.txt",
+      "bytes": 1178,
+      "sha256": "2fe833b1bd53820d511ebfd63b50b0b86b8efea10583a3de64ec19b669143751",
+      "topic": "rec.motorcycles"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.motorcycles/104591",
+      "path": "text/rec.motorcycles__104591.txt",
+      "bytes": 2154,
+      "sha256": "bd46b950af9db9f10da14931adefd087048b733c05c50b900a5be022429732a8",
+      "topic": "rec.motorcycles"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.baseball/102615",
+      "path": "text/rec.sport.baseball__102615.txt",
+      "bytes": 1275,
+      "sha256": "503c6be8c8a8b22af95b5267346d3bde22f25e0b7b100af0729ac9abd2797020",
+      "topic": "rec.sport.baseball"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.baseball/104685",
+      "path": "text/rec.sport.baseball__104685.txt",
+      "bytes": 4118,
+      "sha256": "149cd6a7bd35e871c06f6ed02fc0dd6ad4631b06b0c2aad0011f44491e59fbff",
+      "topic": "rec.sport.baseball"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.baseball/104440",
+      "path": "text/rec.sport.baseball__104440.txt",
+      "bytes": 552,
+      "sha256": "09cdd41519bfd6ffcf22f62589dc59aa1f0bb093b05c07392224f3c3efe72683",
+      "topic": "rec.sport.baseball"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.baseball/104516",
+      "path": "text/rec.sport.baseball__104516.txt",
+      "bytes": 1919,
+      "sha256": "24fb61fe4ffa30617685be27944f813b5d1ba77dd20859fae2aabba4eac74568",
+      "topic": "rec.sport.baseball"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.baseball/104378",
+      "path": "text/rec.sport.baseball__104378.txt",
+      "bytes": 906,
+      "sha256": "f0ec1b80f2f66bb9481d4e29b7c50b8a57ee0c34bd22c5172937bcaae672f86a",
+      "topic": "rec.sport.baseball"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.hockey/53699",
+      "path": "text/rec.sport.hockey__53699.txt",
+      "bytes": 1606,
+      "sha256": "cc32ccc5ef753aee45f90d45bcdc07409fa580e10177105461ce310249aeb3a2",
+      "topic": "rec.sport.hockey"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.hockey/53572",
+      "path": "text/rec.sport.hockey__53572.txt",
+      "bytes": 1683,
+      "sha256": "d13fcf3e7a1cf65fe9e33c3d2fe0447df1e8527e253a26f70642b0857d8b71c5",
+      "topic": "rec.sport.hockey"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.hockey/53905",
+      "path": "text/rec.sport.hockey__53905.txt",
+      "bytes": 1628,
+      "sha256": "c0e90923d8ecd4f69476e619662ccdd1c60e02a9b36c25495e119eb690780579",
+      "topic": "rec.sport.hockey"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.hockey/54180",
+      "path": "text/rec.sport.hockey__54180.txt",
+      "bytes": 400,
+      "sha256": "94ca488cd86fddbb8c0452defd428d41391f4b6357869eacb0dc4c7a5df1597a",
+      "topic": "rec.sport.hockey"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.sport.hockey/54197",
+      "path": "text/rec.sport.hockey__54197.txt",
+      "bytes": 3540,
+      "sha256": "fff40588a266761fdba8c7c7a70a00d4c5ba18463816f1147cf5fcfe7fa26414",
+      "topic": "rec.sport.hockey"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.crypt/15593",
+      "path": "text/sci.crypt__15593.txt",
+      "bytes": 717,
+      "sha256": "986aa4bc2dc7131f8b4fcb5a3c00e9940ece56b2e4e75193ff81a754dafe500a",
+      "topic": "sci.crypt"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.crypt/15273",
+      "path": "text/sci.crypt__15273.txt",
+      "bytes": 1796,
+      "sha256": "7e4fa834420990291c558c771032da5ba1aa8e9141c15c8b3c2030563c823c08",
+      "topic": "sci.crypt"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.crypt/15368",
+      "path": "text/sci.crypt__15368.txt",
+      "bytes": 713,
+      "sha256": "45301591182820ae933f7d5860fade0b395aa1625176198d1198e28ec50b378d",
+      "topic": "sci.crypt"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.crypt/15325",
+      "path": "text/sci.crypt__15325.txt",
+      "bytes": 825,
+      "sha256": "0bc172cd1889cf7de507a922948efd70e7e2bd8687a634f22b248da018d3c957",
+      "topic": "sci.crypt"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.crypt/15717",
+      "path": "text/sci.crypt__15717.txt",
+      "bytes": 1766,
+      "sha256": "70b48b8109e727163c3c4492b058c3958ae16caaad043546355ac4bee9f19d21",
+      "topic": "sci.crypt"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.electronics/53854",
+      "path": "text/sci.electronics__53854.txt",
+      "bytes": 1834,
+      "sha256": "41707bdaab402b1caf24e8268bd1d4c07f195d6fec820ef65ae44418e9baf2c5",
+      "topic": "sci.electronics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.electronics/53628",
+      "path": "text/sci.electronics__53628.txt",
+      "bytes": 1409,
+      "sha256": "f8f6bb2701c05d4d01018ed6b9f46b66c9554644ca8f19dfe78ec73f632687df",
+      "topic": "sci.electronics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.electronics/53763",
+      "path": "text/sci.electronics__53763.txt",
+      "bytes": 1353,
+      "sha256": "bc9e60a50b16e3f11c42c975c359a75810f6a9988f6b1e4c0bd451236056cd21",
+      "topic": "sci.electronics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.electronics/53735",
+      "path": "text/sci.electronics__53735.txt",
+      "bytes": 679,
+      "sha256": "faed6c652391a76f38bbdeb0551e878464a9ede3576327bafb60509d0f330f04",
+      "topic": "sci.electronics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.electronics/53890",
+      "path": "text/sci.electronics__53890.txt",
+      "bytes": 1066,
+      "sha256": "2e35c98b90c43c60e29d39a5d5feebb04a2db4f47c7c45c85430ac327e044a9e",
+      "topic": "sci.electronics"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/58771",
+      "path": "text/sci.med__58771.txt",
+      "bytes": 836,
+      "sha256": "4be19227d7d203cffdfb974090de5c1338ce2abb374698f930bdedac8fb0c5b4",
+      "topic": "sci.med"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/58109",
+      "path": "text/sci.med__58109.txt",
+      "bytes": 6206,
+      "sha256": "725e543ea0f2078309b1d0f0914ecf55aac75898b0db47d3f34e5718b56e9d8e",
+      "topic": "sci.med"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/58150",
+      "path": "text/sci.med__58150.txt",
+      "bytes": 2763,
+      "sha256": "041cf6082bfe27d2115dee2581ebd3a2726d27544df72dc8b4e194741a7dd47a",
+      "topic": "sci.med"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/58819",
+      "path": "text/sci.med__58819.txt",
+      "bytes": 1114,
+      "sha256": "18e959bdc4ee0e437c4578da7bdcd5f128ef9c7696ab896d3326a9ddecbe0093",
+      "topic": "sci.med"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/58929",
+      "path": "text/sci.med__58929.txt",
+      "bytes": 504,
+      "sha256": "a85485c9b0b4b7e779f46cbcc6080324781c76f4cbef281f6a2b2b0dff5b57f5",
+      "topic": "sci.med"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/60875",
+      "path": "text/sci.space__60875.txt",
+      "bytes": 1958,
+      "sha256": "56d46a04c1f9cd12e012fc069339065a5428d8905b2faa1ba20be312bba79a9e",
+      "topic": "sci.space"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/60981",
+      "path": "text/sci.space__60981.txt",
+      "bytes": 332,
+      "sha256": "613667ffde7e5f80ebc7c88fc71704063ac5e06efa5a82e71c3420b3c426260c",
+      "topic": "sci.space"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/61017",
+      "path": "text/sci.space__61017.txt",
+      "bytes": 1175,
+      "sha256": "e8ebdab6ad131003e5e5cb1f71532cd78cec718c07d235aba62ed7c9dc1562b8",
+      "topic": "sci.space"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/61021",
+      "path": "text/sci.space__61021.txt",
+      "bytes": 3367,
+      "sha256": "31717f0d08a7d11a28ea9614689e03a019ff09926e9b27213db3742fe13208eb",
+      "topic": "sci.space"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/60242",
+      "path": "text/sci.space__60242.txt",
+      "bytes": 6556,
+      "sha256": "e189f3789310b7d0a033a2ed0ae96608aeec80a78af32b1c94542439650d475d",
+      "topic": "sci.space"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/soc.religion.christian/20783",
+      "path": "text/soc.religion.christian__20783.txt",
+      "bytes": 719,
+      "sha256": "f9d9f1b0e4f70de21c84006c5b2202bde6e2f2b20845e0840922b2d767901b7f",
+      "topic": "soc.religion.christian"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/soc.religion.christian/20759",
+      "path": "text/soc.religion.christian__20759.txt",
+      "bytes": 245,
+      "sha256": "917878c0b1db5afe29912546fe85361ed15bd4d62feab5762184a6fea633078f",
+      "topic": "soc.religion.christian"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/soc.religion.christian/20632",
+      "path": "text/soc.religion.christian__20632.txt",
+      "bytes": 378,
+      "sha256": "018bc4b009bf162524778b82df86aabdd94dd08a20b5a0aeb6e747717bfffefc",
+      "topic": "soc.religion.christian"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/soc.religion.christian/20682",
+      "path": "text/soc.religion.christian__20682.txt",
+      "bytes": 510,
+      "sha256": "1e717343fb9599ed59d232bc39d7f2c526fd6f5209ce81f7c4e5ef2a15177463",
+      "topic": "soc.religion.christian"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/soc.religion.christian/21362",
+      "path": "text/soc.religion.christian__21362.txt",
+      "bytes": 1636,
+      "sha256": "b29220683fe860ca8b5c612c1c106182cda69f578f4670db62eab30108a63f22",
+      "topic": "soc.religion.christian"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.guns/54658",
+      "path": "text/talk.politics.guns__54658.txt",
+      "bytes": 679,
+      "sha256": "c3cd079ac81b24b21eee337b01726f22bcfb5351718f1f91a62ab76d03a3b004",
+      "topic": "talk.politics.guns"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.guns/54248",
+      "path": "text/talk.politics.guns__54248.txt",
+      "bytes": 2840,
+      "sha256": "121050c24145eb0f2a1132ac72cf7944906e1a214cbbbff827cc54f4eeaf23f4",
+      "topic": "talk.politics.guns"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.guns/54361",
+      "path": "text/talk.politics.guns__54361.txt",
+      "bytes": 694,
+      "sha256": "3beac111f240899481ec7c022a7f1de83dc30a776497c5b3edf05ab78851db08",
+      "topic": "talk.politics.guns"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.guns/54309",
+      "path": "text/talk.politics.guns__54309.txt",
+      "bytes": 1133,
+      "sha256": "fe40a71a2e45166769ee5cff64bd36970bf20c156ddaf3cb183335c8086afa4e",
+      "topic": "talk.politics.guns"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.guns/54467",
+      "path": "text/talk.politics.guns__54467.txt",
+      "bytes": 324,
+      "sha256": "1ce09a85eafa466de65da7f7ce21b20956e6d54e33ae8f1fcfcb76f733c75347",
+      "topic": "talk.politics.guns"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.mideast/76236",
+      "path": "text/talk.politics.mideast__76236.txt",
+      "bytes": 923,
+      "sha256": "52c7c3c96f164cc1f3fc0e38afd0fb5c048524642e3efe486408345157d38f70",
+      "topic": "talk.politics.mideast"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.mideast/76007",
+      "path": "text/talk.politics.mideast__76007.txt",
+      "bytes": 1350,
+      "sha256": "4aba67f8c125c94de29008b71f16afefd2d8a7f0d667c3c6e635bda84d49826a",
+      "topic": "talk.politics.mideast"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.mideast/75996",
+      "path": "text/talk.politics.mideast__75996.txt",
+      "bytes": 745,
+      "sha256": "1753d5dadc6debd71e5a7db2bed7c0d69b50f43ec52bae65d9f6ab308587840c",
+      "topic": "talk.politics.mideast"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.mideast/76205",
+      "path": "text/talk.politics.mideast__76205.txt",
+      "bytes": 471,
+      "sha256": "5e047f84335ca5a5c56f0be9a0b8008b9c69626add3e8d92220f21ab7a008f89",
+      "topic": "talk.politics.mideast"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.mideast/75953",
+      "path": "text/talk.politics.mideast__75953.txt",
+      "bytes": 987,
+      "sha256": "05eabddda5d0d058e5f8d6c8017b600147e4809c6127c931744894d1e1f81659",
+      "topic": "talk.politics.mideast"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.misc/178521",
+      "path": "text/talk.politics.misc__178521.txt",
+      "bytes": 1491,
+      "sha256": "0d5f4968a4e19cf0eeca5aa4aa58ee9f3aeee29c0591be8b80ef0fa12a6b9b88",
+      "topic": "talk.politics.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.misc/176924",
+      "path": "text/talk.politics.misc__176924.txt",
+      "bytes": 777,
+      "sha256": "09f0a5eab3ab369d00b3b4d53dba2b645ae56e0644001108a8f5c2bacdcf7ca4",
+      "topic": "talk.politics.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.misc/179022",
+      "path": "text/talk.politics.misc__179022.txt",
+      "bytes": 2044,
+      "sha256": "44c84596ee051896feabc4880a1b484e917174de37a7917608461a1b276bfe9f",
+      "topic": "talk.politics.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.misc/178301",
+      "path": "text/talk.politics.misc__178301.txt",
+      "bytes": 2764,
+      "sha256": "26c51415ca6d61b7b3b676d64ef0767c4d76815869a771814d8625ead23fb290",
+      "topic": "talk.politics.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.politics.misc/178942",
+      "path": "text/talk.politics.misc__178942.txt",
+      "bytes": 1895,
+      "sha256": "78cd425f7d3c80414b5570590a19f4fedc4290e7a2f9e2fbd2247a93d040943f",
+      "topic": "talk.politics.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/83669",
+      "path": "text/talk.religion.misc__83669.txt",
+      "bytes": 881,
+      "sha256": "6805dbece614aa1d953868e84554157a116ee2074bcb09779be8ad3940163ca8",
+      "topic": "talk.religion.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/84074",
+      "path": "text/talk.religion.misc__84074.txt",
+      "bytes": 1032,
+      "sha256": "ecc092aef65b747b2a2d0d8a226c5c52341efb81d8a1ec756ce24d336c85d4a6",
+      "topic": "talk.religion.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/82787",
+      "path": "text/talk.religion.misc__82787.txt",
+      "bytes": 522,
+      "sha256": "08971455513634a0c0e78b74dc87ba7563ad3b42a8be3943086155d570798eee",
+      "topic": "talk.religion.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/83442",
+      "path": "text/talk.religion.misc__83442.txt",
+      "bytes": 10298,
+      "sha256": "7a8cf68ba27adf4f6a559c9de9b3bae97cd4bb6f6cb6aa964eaa19bd8549a6e5",
+      "topic": "talk.religion.misc"
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/83592",
+      "path": "text/talk.religion.misc__83592.txt",
+      "bytes": 939,
+      "sha256": "1901c46c4ac289050cac4ead970a6ad4b5678767b674a88e43d50f00a324ca08",
+      "topic": "talk.religion.misc"
+    }
+  ]
+}
