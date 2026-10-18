@@ -27,7 +27,7 @@
         "text_extraction": {
           "provider": "docling_serve",
           "provider_config": {
-            "base_url": "http://host.docker.internal:5001"
+            "base_url": "http://docling-serve:5001"
           }
         }
       },
@@ -43,7 +43,7 @@
         "chunk_size": 512,
         "provider": "docling_serve",
         "provider_config": {
-          "api_base": "http://host.docker.internal:5001"
+          "api_base": "http://docling-serve:5001"
         }
       },
       "depends_on": [
