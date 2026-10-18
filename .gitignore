@@ -3,3 +3,9 @@
 
 # IDE files
 /.idea/
+
+# Local environment
+.env
+
+# Local corpus
+/corpus/
