@@ -1,116 +1,105 @@
 {
   "flow_name": "sample_flow",
   "global_config": {
-    "doc_column": "content",
-    "disable_validation": false,
     "force_ingest": true,
     "data_storage_type": "local",
-    "storage": "in-memory",
-    "execute_type": "local",
     "enable_micro_batching": false
   },
   "flow": [
     {
       "type": "ingest_source",
-      "name": "ingest_source_filesystem",
+      "name": "ingest_with_filesystem",
       "config": {
+        "include_filter": "pdf",
         "provider": "filesystem",
         "provider_config": {
           "paths": [
             "/documents"
           ]
-        },
-        "include_filter": "pdf"
+        }
       }
     },
     {
       "type": "extract_operator",
-      "name": "extract_with_docling",
+      "name": "extract_with_docling_serve",
       "config": {
+        "max_workers": 1,
         "text_extraction": {
-          "provider": "docling_library",
-          "doc_column": "content"
-        },
-        "entity_extraction": {
-          "provider": "none"
-        },
-        "max_workers": 1
+          "provider": "docling_serve",
+          "provider_config": {
+            "base_url": "http://host.docker.internal:5001"
+          }
+        }
       },
       "depends_on": [
-        "ingest_source_filesystem"
+        "ingest_with_filesystem"
       ]
     },
     {
       "type": "chunker",
-      "name": "simple_chunker",
+      "name": "chunker_with_docling_serve",
       "config": {
-        "chunk_type": "simple",
+        "chunk_type": "hybrid",
         "chunk_size": 512,
-        "chunk_overlap": 50,
-        "retain_original_content": false
+        "provider": "docling_serve",
+        "provider_config": {
+          "api_base": "http://host.docker.internal:5001"
+        }
       },
       "depends_on": [
-        "extract_with_docling"
+        "extract_with_docling_serve"
       ]
     },
     {
       "type": "embeddings",
-      "name": "ollama_embeddings",
+      "name": "embeddings_with_ollama",
       "config": {
         "provider": "litellm",
         "provider_config": {
           "model_id": "openai/nomic-embed-text",
           "api_base": "http://ollama:11434/v1",
-          "api_key": "ollama"
-        },
-        "embeddings_column": "embeddings",
-        "overlap_ratio": 0.1
+          "api_key": "placeholder"
+        }
       },
       "depends_on": [
-        "simple_chunker"
+        "chunker_with_docling_serve"
       ]
     },
     {
       "type": "vectordb",
-      "name": "opensearch_vector_store",
+      "name": "vectordb_with_opensearch",
       "config": {
         "provider": "opensearch",
-        "doc_id_column": "doc_id_hash",
-        "create_index": true,
         "provider_config": {
-          "index_name": "docker-e2e-documents",
+          "index_name": "docling-pipelines-extras-batching",
           "host": "opensearch",
           "port": 9200,
           "username": "${OPENSEARCH_USERNAME}",
           "password": "${OPENSEARCH_PASSWORD}",
           "use_ssl": false,
-          "verify_certs": false,
-          "batch_size": 100,
-          "engine": "faiss",
-          "algorithm": "hnsw",
-          "space_type": "l2"
+          "verify_certs": false
         },
         "feature_mappings": [
           {
             "feature_name": "doc_id_hash",
-            "mapped_column_name": "pk"
-          },
-          {
-            "feature_name": "content",
-            "mapped_column_name": "text"
+            "mapped_column_name": "id"
           },
           {
             "feature_name": "name",
-            "mapped_column_name": "doc_name"
+            "mapped_column_name": "name"
+          },
+          {
+            "feature_name": "content",
+            "mapped_column_name": "content"
           },
           {
             "feature_name": "embeddings",
-            "mapped_column_name": "vector_embeddings"
+            "mapped_column_name": "embeddings"
           }
         ]
       },
       "depends_on": [
-        "ollama_embeddings"
+        "embeddings_with_ollama"
       ]
     }
   ]
