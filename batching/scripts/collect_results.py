@@ -9,7 +9,6 @@ import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 from uuid import UUID
 
@@ -27,20 +26,8 @@ FIELDS = [
 
 
 def download(url: str) -> bytes:
-    """Retry transient API failures, including reports not ready yet (425)."""
-    for attempt in range(12):
-        try:
-            with urlopen(url, timeout=60) as response:
-                return response.read()
-        except HTTPError as error:
-            detail = error.read().decode("utf-8", errors="replace")
-            if error.code not in {425, 429, 500, 502, 503, 504} or attempt == 11:
-                raise RuntimeError(f"GET {url}: HTTP {error.code}: {detail}") from error
-        except (URLError, TimeoutError) as error:
-            if attempt == 11:
-                raise RuntimeError(f"GET {url}: {error}") from error
-        time.sleep(5)
-    raise RuntimeError(f"GET {url}: retries exhausted")
+    with urlopen(url, timeout=60) as response:
+        return response.read()
 
 
 def collect_container_logs(*, case: str, stats: dict, destination: Path) -> None:
