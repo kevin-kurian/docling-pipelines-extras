@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.request import urlopen
@@ -64,6 +65,21 @@ def append_results(*, destination: Path, row: dict) -> None:
         if header is None:
             writer.writeheader()
         writer.writerow(row)
+
+
+def create_collection_directory(*, results_dir: Path, input_type: str, case: str) -> tuple[str, Path]:
+    """Create a uniquely named report directory with sortable UTC timestamp first."""
+    results_dir.mkdir(parents=True, exist_ok=True)
+    while True:
+        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        collection_id = f"{timestamp}_{case}_{input_type}"
+        run_dir = results_dir / collection_id
+        try:
+            run_dir.mkdir()
+        except FileExistsError:
+            time.sleep(0.05)
+            continue
+        return collection_id, run_dir
 
 
 def collect_native_logs(*, source: Path, destination: Path) -> None:
@@ -132,16 +148,9 @@ def collect(args: argparse.Namespace) -> int:
         raise RuntimeError("flow-name must be a single folder name")
 
     results_dir = args.results_dir.resolve()
-    results_dir.mkdir(parents=True, exist_ok=True)
-    while True:
-        timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
-        collection_id = f"{args.input_type}_{args.case}_{timestamp}"
-        run_dir = results_dir / collection_id
-        try:
-            run_dir.mkdir()
-        except FileExistsError:
-            continue
-        break
+    collection_id, run_dir = create_collection_directory(
+        results_dir=results_dir, input_type=args.input_type, case=args.case
+    )
     raw_dir = run_dir / "_"
     raw_dir.mkdir()
     (raw_dir / "job_stats.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")

@@ -21,7 +21,15 @@ import docker
 import psutil
 from matplotlib.figure import Figure
 
-from collect_results import CASES, FIELDS, TERMINAL_STATUSES, append_results, collect_native_logs, write_report
+from collect_results import (
+    CASES,
+    FIELDS,
+    TERMINAL_STATUSES,
+    append_results,
+    collect_native_logs,
+    create_collection_directory,
+    write_report,
+)
 
 BATCHING_DIR = Path(__file__).resolve().parents[1]
 INFRA_SERVICES = ("docling-serve", "ollama", "opensearch")
@@ -290,10 +298,14 @@ class Runner:
         self.args = args
         self.flow = json.loads(args.flow_file.read_text())
         self.embedding_models = self._find_embedding_models(self.flow)
-        self.flow_name = self.flow["flow_name"]
         self.input_type = args.flow_file.stem.removeprefix("sample_flow_")
-        collection_id = f"{self.input_type}_{args.case}_{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
-        self.run_dir = args.results_dir / collection_id
+        self.flow_name = self.flow["flow_name"]
+        if args.flow_file.stem.startswith("sample_flow_"):
+            self.flow_name = f"sample_flow_{args.case}_{self.input_type}_{int(time.time())}"
+            self.flow["flow_name"] = self.flow_name
+        collection_id, self.run_dir = create_collection_directory(
+            results_dir=args.results_dir, input_type=self.input_type, case=args.case
+        )
         self.raw_dir = self.run_dir / "_"
         self.raw_dir.mkdir(parents=True)
         self.client = self.sampler = None
