@@ -62,7 +62,9 @@ export MPS_LOG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/docpipe-mps.XXXXXX")"
 - Start Docling Serve
 
   ```bash
-  nohup env DOCLING_DEVICE=mps docling-serve run --host 0.0.0.0 --port 5001 > "$MPS_LOG_DIR/docling-serve.log" 2>&1 &
+  nohup env DOCLING_DEVICE=mps \
+    DOCLING_SERVE_ENG_LOC_NUM_WORKERS=1 \
+    docling-serve run --host 0.0.0.0 --port 5001 > "$MPS_LOG_DIR/docling-serve.log" 2>&1 &
   curl --fail -sS --retry 180 --retry-delay 5 --retry-all-errors --max-time 5 http://localhost:5001/ready
   ```
 

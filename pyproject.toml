@@ -14,6 +14,9 @@ dependencies = [
 mps = [
     "docling-serve[rapidocr,easyocr]==1.37.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
     "docling[rapidocr]==2.132.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "rapidocr==3.9.1; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "opencv-python==4.12.0.88; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "opencv-python-headless==4.12.0.88; sys_platform == 'darwin' and platform_machine == 'arm64'",
     "torch==2.13.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
 ]
 
