@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow",
+  "flow_name": "sample_flow_text",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -10,11 +10,11 @@
       "type": "ingest_source",
       "name": "ingest_with_filesystem",
       "config": {
-        "include_filter": "pdf",
+        "include_filter": "txt",
         "provider": "filesystem",
         "provider_config": {
           "paths": [
-            "/documents"
+            "/text-documents"
           ]
         }
       }
