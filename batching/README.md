@@ -2,6 +2,12 @@
 
 ## Setup
 
+From the repository root, create `batching/.env` and set `OPENSEARCH_PASSWORD`:
+
+```bash
+cp batching/.env.example batching/.env
+```
+
 ### CPU/GPU
 
 ```bash

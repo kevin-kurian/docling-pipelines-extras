@@ -78,7 +78,7 @@ def parse_arguments() -> argparse.Namespace:
         "--native-logs-dir", type=Path, default=os.environ.get("MPS_LOG_DIR"),
         help="Native service log directory (default: MPS_LOG_DIR)",
     )
-    parser.add_argument("--env-file", type=Path, default=BATCHING_DIR.parent / ".env")
+    parser.add_argument("--env-file", type=Path, default=BATCHING_DIR / ".env")
     parser.add_argument("--project-name")
     parser.add_argument("--api-url", default="http://localhost:8080")
     parser.add_argument("--results-dir", type=Path, default=BATCHING_DIR / "results")

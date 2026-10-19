@@ -35,7 +35,7 @@ def collect_container_logs(*, case: str, destination: Path) -> None:
     """Collect the complete docpipe container log before stopping the stack."""
     compose_case = "cpu" if case == "mps" else case
     command = [
-        "docker", "compose", "--env-file", str(BATCHING_DIR.parent / ".env"),
+        "docker", "compose", "--env-file", str(BATCHING_DIR / ".env"),
         "-f", str(BATCHING_DIR / f"docker-compose-{compose_case}.yml"),
         "-f", str(BATCHING_DIR / "docker-compose-infra.yml"), "ps", "-q", "docpipe",
     ]

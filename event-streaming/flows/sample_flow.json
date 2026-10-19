@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow_text",
+  "flow_name": "sample_flow_streaming",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -14,6 +14,7 @@
         "provider": "filesystem",
         "provider_config": {
           "paths": [
+            "/documents",
             "/text-documents"
           ]
         }
@@ -71,7 +72,7 @@
       "config": {
         "provider": "opensearch",
         "provider_config": {
-          "index_name": "docling-pipelines-extras-batching",
+          "index_name": "docling-pipelines-extras-event-streaming",
           "host": "opensearch",
           "port": 9200,
           "username": "${OPENSEARCH_USERNAME}",
