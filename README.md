@@ -11,7 +11,10 @@ source .venv/bin/activate
 
 ## Build and upload
 
-Requires `../docling-pipelines`. Use your Docker Hub token at login.
+Clone the `docling-pipelines` source repository into the same parent directory as
+`docling-pipelines-extras`, so it is available at `../docling-pipelines` when running
+commands from this repository root. The Docker builds below use that checkout as
+their build context. Use your Docker Hub token at login.
 
 ```bash
 docker login -u kevin1kurian
@@ -25,9 +28,10 @@ docker tag docling-pipelines:v2.0.1-gpu kevin1kurian/docling-pipelines:v2.0.1-gp
 docker push kevin1kurian/docling-pipelines:v2.0.1-gpu
 ```
 
-## Run the batching tests
+## Manual execution
 
-Use Bash from this repository root, in the same terminal session.
+Run the commands below from the `docling-pipelines-extras` directory. Use the same
+terminal for all steps so the variables set in earlier commands remain available.
 
 - PDF: 10 files, 96 pages — `batching/flows/sample_flow_pdf.json`
 - Text: 100 files — `batching/flows/sample_flow_text.json`
@@ -104,7 +108,7 @@ FLOW_ID=$(sed "s|\"flow_name\": \"sample_flow_pdf\"|\"flow_name\": \"$FLOW_NAME\
 ```
 
 ```bash
-# Submit the text flow
+# Submit the TXT flow
 export INPUT_TYPE=text
 FLOW_NAME="sample_flow_text_${CASE}_$(date +%s)"
 FLOW_ID=$(sed "s|\"flow_name\": \"sample_flow_text\"|\"flow_name\": \"$FLOW_NAME\"|" batching/flows/sample_flow_text.json \
@@ -154,45 +158,23 @@ batching/results/
 └── _/
 ```
 
-Run-level `_` folders contain raw measurements, API responses, CSVs, and logs.
-The results-level `_` folder contains the machine-readable index, shared setup
-logs, and earlier exports. Multiple flows and repetitions create sibling run
-folders directly, without a benchmark parent folder.
+## Automatic test runner
 
-## Run tests with CPU and memory collection
-
-Example: run the PDF flow on CPU without container resource limits. Start the
-CPU-unlimited stack and pull the embedding model using the commands above, then
-run from this repository root:
+Run from this repository root with Docker running and `.env` configured:
 
 ```bash
 source .venv/bin/activate
 uv pip install -r requirements.txt
-python batching/scripts/run_test.py \
-  --case cpu-unlimited \
-  --env-file .env \
-  --compose-file batching/docker-compose-cpu.yml \
-  --compose-file batching/docker-compose-infra.yml \
+python batching/scripts/runner.py \
   --flow-file batching/flows/sample_flow_pdf.json \
-  --colima-profile default \
-  --interval 1 --before-seconds 30 --after-seconds 30
+  --compose-file batching/docker-compose-cpu.yml
 ```
 
-Change the flow file, Compose files, case label, Colima profile, and timing
-parameters to match your test.
+Run `python batching/scripts/runner.py --help` for optional settings.
 
-- `--flow-file`: one or more flow JSON files; repeatable and accepts shell globs.
-- `--compose-file`: repeat for each Compose file; Docker merges them in the order
-  supplied. This example combines the CPU application and shared infrastructure files.
-  `--case` is a results label; it does not select the stack.
-- `--service`: restrict monitoring to selected services; repeatable. Default: all containers in the stack.
-- `--colima-profile`: repeat for multiple VMs. Use `--skip-colima` on non-Colima hosts.
-- `--api-url`, `--job-config`, `--project-name`, `--results-dir`: configure the API,
-  optional job submission JSON, Compose project, and output directory.
-- `--repeat`, `--interval`, `--before-seconds`, `--after-seconds`, `--timeout-seconds`:
-  configure repetitions, sampling windows, and the maximum job run time.
+### Review the results
 
-Resource summaries and the CPU/memory graph are included in `REPORT.md`.
-Their source CSVs, image, and run metadata are stored under that run's `_` folder.
-
-Run `python batching/scripts/run_test.py --help` for all parameters.
+Each run saves its results under `batching/results/`. The runner prints the path
+to `REPORT.md`; start there for an overview. Inside the run's `_` folder, you'll
+find the job report (`summary.csv`), complete logs (`flow_run.log`), and resource
+data and graphs (`resource_*`).

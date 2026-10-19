@@ -6,7 +6,6 @@ import csv
 import json
 import subprocess
 import sys
-import time
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.request import urlopen
@@ -30,8 +29,8 @@ def download(url: str) -> bytes:
         return response.read()
 
 
-def collect_container_logs(*, case: str, stats: dict, destination: Path) -> None:
-    """Keep the full run time window, including messages without a run ID."""
+def collect_container_logs(*, case: str, destination: Path) -> None:
+    """Collect the complete docpipe container log before stopping the stack."""
     compose_dir = BATCHING_DIR / "with_limits" if case.endswith("-limited") else BATCHING_DIR
     hardware = case.split("-")[0]
     command = [
@@ -43,13 +42,9 @@ def collect_container_logs(*, case: str, stats: dict, destination: Path) -> None
     containers = result.stdout.split()
     if result.returncode or len(containers) != 1:
         raise RuntimeError(result.stderr.strip() or "Expected one running docpipe container; collect before stopping it")
-    start = int(stats.get("start_time") or 0)
-    if not start:
-        raise RuntimeError("Run start_time is unavailable; cannot bound container logs")
-    end = int(stats.get("end_time") or time.time())
     with destination.open("wb") as output:
         result = subprocess.run(
-            ["docker", "logs", "--since", str(start - 1), "--until", str(end + 2), containers[0]],
+            ["docker", "logs", containers[0]],
             stdout=output, stderr=subprocess.STDOUT, timeout=60,
         )
     if result.returncode:
@@ -110,7 +105,7 @@ def write_report(*, run_dir: Path, notes: tuple[str, ...] = ()) -> None:
                     f"{float(row['memory_used_bytes_max']) / 1024 ** 3:.2f} |"
                 )
     if (raw_dir / "resource_samples.png").exists():
-        lines += ["", "## Resource timeline", "", "![CPU and memory before, during, and after the run](_/resource_samples.png)"]
+        lines += ["", "## Resource timeline", "", "![CPU and memory across the run lifecycle](_/resource_samples.png)"]
     if metadata.get("collection_errors"):
         lines += ["", f"Collection errors: {metadata['collection_errors']}"]
     lines += ["", "Supporting data and logs: [_](_/).", ""]
@@ -155,7 +150,7 @@ def collect(args: argparse.Namespace) -> int:
     except (RuntimeError, OSError) as error:
         errors.append(f"summary.csv: {error}")
     try:
-        collect_container_logs(case=args.case, stats=stats, destination=raw_dir / "flow_run.log")
+        collect_container_logs(case=args.case, destination=raw_dir / "flow_run.log")
     except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
         errors.append(f"flow_run.log: {error}")
 
