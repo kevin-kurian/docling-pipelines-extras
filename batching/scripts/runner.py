@@ -5,14 +5,16 @@ import argparse
 import csv
 import json
 import os
+import shutil
 import signal
+import socket
 import subprocess
 import sys
 import threading
 import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
@@ -26,13 +28,15 @@ from collect_results import (
     FIELDS,
     TERMINAL_STATUSES,
     append_results,
-    collect_native_logs,
     create_collection_directory,
     write_report,
 )
 
 BATCHING_DIR = Path(__file__).resolve().parents[1]
 INFRA_SERVICES = ("docling-serve", "ollama", "opensearch")
+MPS_SERVICE_STARTUP_TIMEOUT_SECONDS = 900
+MPS_SERVICE_POLL_INTERVAL_SECONDS = 2
+MPS_SERVICE_SHUTDOWN_TIMEOUT_SECONDS = 30
 
 SAMPLE_FIELDS = [
     "collection_id", "job_run_id", "timestamp", "phase", "scope", "target",
@@ -84,7 +88,7 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--native-logs-dir", type=Path, default=os.environ.get("MPS_LOG_DIR"),
-        help="Native service log directory (default: MPS_LOG_DIR)",
+        help="Native service log directory (default: MPS_LOG_DIR or the run report directory)",
     )
     parser.add_argument("--env-file", type=Path, default=BATCHING_DIR / ".env")
     parser.add_argument("--project-name")
@@ -207,7 +211,7 @@ class Sampler:
                 timestamp = row.pop("timestamp", time.time())
                 self.writer.writerow({
                     "collection_id": self.run_dir.name, "job_run_id": job_run_id,
-                    "timestamp": datetime.fromtimestamp(timestamp, UTC).isoformat(), "phase": phase,
+                    "timestamp": datetime.fromtimestamp(timestamp).astimezone().isoformat(), "phase": phase,
                     "cpu_percent": row["cpu_cores"] * 100, **row,
                 })
             self.output.flush()
@@ -301,13 +305,16 @@ class Runner:
         self.input_type = args.flow_file.stem.removeprefix("sample_flow_")
         self.flow_name = self.flow["flow_name"]
         if args.flow_file.stem.startswith("sample_flow_"):
-            self.flow_name = f"sample_flow_{args.case}_{self.input_type}_{int(time.time())}"
+            timestamp = datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
+            self.flow_name = f"sample_flow_{args.case}_{self.input_type}_{timestamp}"
             self.flow["flow_name"] = self.flow_name
         collection_id, self.run_dir = create_collection_directory(
             results_dir=args.results_dir, input_type=self.input_type, case=args.case
         )
         self.raw_dir = self.run_dir / "_"
         self.raw_dir.mkdir(parents=True)
+        self.native_logs_dir = Path(args.native_logs_dir) if args.native_logs_dir else self.raw_dir
+        self.native_processes: dict[str, subprocess.Popen[bytes]] = {}
         self.client = self.sampler = None
         self.stack_started = False
         self.job_run_id = ""
@@ -338,18 +345,62 @@ class Runner:
                 models.add(model.removeprefix("openai/"))
         return sorted(models)
 
-    def check_native_services(self):
+    def start_native_services(self):
         if self.args.case != "mps":
             return
-        for name, url in (
-            ("Docling Serve", "http://localhost:5001/ready"),
-            ("Ollama", "http://localhost:11434/api/tags"),
-        ):
+
+        services = (
+            ("Ollama", "ollama", 11434, ["ollama", "serve"], "http://localhost:11434/api/tags",
+             {"OLLAMA_HOST": "0.0.0.0:11434"}),
+            ("Docling Serve", "docling-serve", 5001,
+             ["docling-serve", "run", "--host", "0.0.0.0", "--port", "5001"],
+             "http://localhost:5001/ready",
+             {"DOCLING_DEVICE": "mps", "DOCLING_SERVE_ENG_LOC_NUM_WORKERS": "1",
+              "DOCLING_SERVE_SYNC_POLL_INTERVAL": "1"}),
+        )
+        for name, executable, port, _, _, _ in services:
+            if shutil.which(executable) is None:
+                raise RuntimeError(f"MPS requires `{executable}` on PATH; install the MPS dependencies first")
             try:
-                with urlopen(url, timeout=10) as response:
+                with socket.create_connection(("localhost", port), timeout=1):
+                    raise RuntimeError(
+                        f"Port {port} is already in use; stop the existing {name} process before a clean MPS run"
+                    )
+            except OSError:
+                pass
+
+        self.native_logs_dir.mkdir(parents=True, exist_ok=True)
+        for name, _, _, command, url, environment in services:
+            log_path = self.native_logs_dir / f"{name.lower().replace(' ', '-')}.log"
+            with log_path.open("wb") as output:
+                process = subprocess.Popen(
+                    command, env={**os.environ, **environment}, stdout=output,
+                    stderr=subprocess.STDOUT, start_new_session=True,
+                )
+            self.native_processes[name] = process
+            print(f"Starting {name}", flush=True)
+            self.wait_for_native_service(name=name, url=url, process=process, log_path=log_path)
+
+    @staticmethod
+    def wait_for_native_service(
+        *, name: str, url: str, process: subprocess.Popen[bytes], log_path: Path,
+    ) -> None:
+        deadline = time.monotonic() + MPS_SERVICE_STARTUP_TIMEOUT_SECONDS
+        last_error = None
+        while time.monotonic() < deadline:
+            if process.poll() is not None:
+                raise RuntimeError(
+                    f"{name} exited with status {process.returncode}; see {log_path}"
+                )
+            try:
+                with urlopen(url, timeout=5) as response:
                     response.read()
+                print(f"{name} is ready", flush=True)
+                return
             except OSError as error:
-                raise RuntimeError(f"Start native {name} before running MPS; readiness check failed: {url}") from error
+                last_error = error
+            time.sleep(MPS_SERVICE_POLL_INTERVAL_SECONDS)
+        raise TimeoutError(f"{name} did not become ready at {url}; see {log_path}") from last_error
 
     def compose_command(self) -> list[str]:
         command = ["docker", "compose"]
@@ -379,11 +430,14 @@ class Runner:
         self.sampler = Sampler(args=self.args, client=self.client, run_dir=self.run_dir)
         self.sampler.start()
 
-    def start_containers(self):
+    def reset_containers(self):
         self.stack_started = True
         # Clear leftovers from an interrupted run before creating this environment.
         subprocess.run(self.compose_command() + ["down", "-v", "--remove-orphans"], check=True)
+
+    def start_containers(self):
         subprocess.run(self.compose_command() + ["up", "-d", "--wait", "--no-deps", *self.args.infra_services], check=True)
+        self.start_native_services()
         subprocess.run(self.compose_command() + ["up", "-d", "--wait", "--no-deps", "docpipe"], check=True)
         self.sampler.check()
 
@@ -487,9 +541,52 @@ class Runner:
             # Both application and infrastructure files are included in this command.
             subprocess.run(self.compose_command() + ["down", "-v", "--remove-orphans"], check=True)
 
+    def stop_native_services(self):
+        if self.sampler:
+            self.sampler.phase = "teardown"
+        errors = []
+        for name, process in reversed(list(self.native_processes.items())):
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            except OSError as error:
+                errors.append(f"{name}: {error}")
+                try:
+                    process.terminate()
+                except OSError as terminate_error:
+                    errors.append(f"{name}: {terminate_error}")
+            try:
+                process.wait(timeout=MPS_SERVICE_SHUTDOWN_TIMEOUT_SECONDS)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                except OSError as error:
+                    errors.append(f"{name}: {error}")
+                    try:
+                        process.kill()
+                    except OSError as kill_error:
+                        errors.append(f"{name}: {kill_error}")
+                try:
+                    process.wait(timeout=5)
+                except (OSError, subprocess.TimeoutExpired) as error:
+                    errors.append(f"{name}: {error}")
+            except OSError as error:
+                errors.append(f"{name}: {error}")
+        self.native_processes.clear()
+        if errors:
+            raise RuntimeError("Failed to stop native MPS services: " + "; ".join(errors))
+
     def collect_native_service_logs(self):
-        if self.args.case == "mps" and self.args.native_logs_dir is not None:
-            collect_native_logs(source=self.args.native_logs_dir, destination=self.raw_dir)
+        if self.args.case != "mps":
+            return
+        for name in ("docling-serve.log", "ollama.log"):
+            source = self.native_logs_dir / name
+            destination = self.raw_dir / name
+            if source.is_file() and source.resolve() != destination.resolve():
+                shutil.copyfile(source, destination)
 
     def stop_resource_collection(self):
         try:
@@ -545,7 +642,7 @@ class Runner:
 def main() -> int:
     runner = Runner(parse_arguments())
     try:
-        runner.check_native_services()
+        runner.reset_containers()
         runner.start_resource_collection()
         runner.start_containers()
         runner.download_embedding_models()
@@ -558,8 +655,9 @@ def main() -> int:
         runner.finish_step(action=runner.collect_job_run_files)
         runner.finish_step(action=runner.collect_job_report)
         runner.finish_step(action=runner.collect_container_logs)
-        runner.finish_step(action=runner.collect_native_service_logs)
         runner.finish_step(action=runner.stop_containers)
+        runner.finish_step(action=runner.stop_native_services)
+        runner.finish_step(action=runner.collect_native_service_logs)
         runner.finish_step(action=runner.stop_resource_collection)
         runner.finish_step(action=runner.create_reports)
     return 1 if runner.errors else 0

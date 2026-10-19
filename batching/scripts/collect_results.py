@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from urllib.request import urlopen
 from uuid import UUID
@@ -68,10 +68,10 @@ def append_results(*, destination: Path, row: dict) -> None:
 
 
 def create_collection_directory(*, results_dir: Path, input_type: str, case: str) -> tuple[str, Path]:
-    """Create a uniquely named report directory with sortable UTC timestamp first."""
+    """Create a uniquely named report directory with sortable local timestamp first."""
     results_dir.mkdir(parents=True, exist_ok=True)
     while True:
-        timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
         collection_id = f"{timestamp}_{case}_{input_type}"
         run_dir = results_dir / collection_id
         try:
@@ -106,8 +106,8 @@ def write_report(*, run_dir: Path, notes: tuple[str, ...] = ()) -> None:
         f"- Job run: `{stats['job_run_id']}`",
     ]
     if stats.get("start_time"):
-        started = datetime.fromtimestamp(stats["start_time"], UTC).isoformat()
-        lines.append(f"- Started: {started} (UTC)")
+        started = datetime.fromtimestamp(stats["start_time"]).astimezone().isoformat()
+        lines.append(f"- Started: {started}")
     lines += ["", *notes, "", "## Operator timings", "",
               "| Operator | Status | Seconds |", "|---|---|---:|"]
     for node in stats.get("node_stats", {}).values():

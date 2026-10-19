@@ -171,7 +171,7 @@ Set `INPUT_TYPE` to `pdf_ocr`, `pdf_non_ocr`, or `text`:
 
 ```bash
 INPUT_TYPE=pdf_ocr
-FLOW_NAME="sample_flow_${CASE}_${INPUT_TYPE}_$(date +%s)"
+FLOW_NAME="sample_flow_${CASE}_${INPUT_TYPE}_$(date +%Y%m%d_%H%M%S)"
 FLOW_ID=$(sed "s|\"flow_name\": \"[^\"]*\"|\"flow_name\": \"$FLOW_NAME\"|" \
   "$FLOW_DIR/sample_flow_${INPUT_TYPE}.json" |
   curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/flows \
@@ -234,8 +234,6 @@ python batching/scripts/runner.py \
 ```
 
 ### MPS
-
-Start native Ollama and Docling Serve using the MPS setup steps above. Skip OpenSearch and Docpipe.
 
 ```bash
 INPUT_TYPE=pdf_ocr
