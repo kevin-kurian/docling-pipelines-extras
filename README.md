@@ -11,8 +11,6 @@ source .venv/bin/activate
 
 ### MPS
 
-The MPS flows use Apple Vision OCR (`ocrmac`) and Metal-accelerated layout detection.
-
 ```bash
 uv sync --locked --extra mps
 source .venv/bin/activate
@@ -113,40 +111,25 @@ python batching/scripts/collect_results.py --job-run-id "$JOB_RUN_ID" --flow-nam
 
 ## Automatic runs
 
+Set `INPUT_TYPE` to `pdf_ocr`, `pdf_non_ocr`, or `text`.
+
 ### CPU
 
 ```bash
-python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf_ocr.json --compose-file batching/docker-compose-cpu.yml
+INPUT_TYPE=pdf_ocr
+python batching/scripts/runner.py --flow-file "batching/flows/sample_flow_${INPUT_TYPE}.json" --compose-file batching/docker-compose-cpu.yml
 ```
 
 ### GPU
 
 ```bash
-python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf_ocr.json --compose-file batching/docker-compose-gpu.yml
+INPUT_TYPE=pdf_ocr
+python batching/scripts/runner.py --flow-file "batching/flows/sample_flow_${INPUT_TYPE}.json" --compose-file batching/docker-compose-gpu.yml
 ```
 
 ### MPS
 
 ```bash
-python batching/scripts/runner.py --flow-file batching/flows/mps/sample_flow_pdf_ocr.json --compose-file batching/docker-compose-cpu.yml --case mps --infra-services opensearch
-```
-
-### Separate OCR and non-OCR PDF runs
-
-Each subset contains 10 PDFs from [performance-dataset-bo10k](https://huggingface.co/datasets/docling-project/performance-dataset-bo10k). The source has no OCR labels; the selections are documented in [ocr_manifest.json](datasets/10-pdf-files/ocr_manifest.json) and [non_ocr_manifest.json](datasets/10-pdf-files/non_ocr_manifest.json).
-
-- `datasets/10-pdf-files/pdf/ocr/`: 99 pages; OCR recovered text absent from the text layer in every document. Includes mixed text/image PDFs.
-- `datasets/10-pdf-files/pdf/non-ocr/`: 102 pages; usable embedded text on every nonblank page, without large raster regions.
-
-Use `sample_flow_pdf_ocr.json` for the OCR subset and `sample_flow_pdf_non_ocr.json` for the non-OCR subset. Both have CPU/GPU and MPS versions. The OCR flows enable OCR (RapidOCR on CPU/GPU, Apple Vision on MPS); the non-OCR flows disable it. Reports use the input types `pdf_ocr` and `pdf_non_ocr`.
-
-Run CPU cases first, then start the native services from the MPS setup before running MPS cases:
-
-```bash
-source .venv/bin/activate
-python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf_ocr.json --compose-file batching/docker-compose-cpu.yml
-python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf_non_ocr.json --compose-file batching/docker-compose-cpu.yml
-# Start the native MPS services described above before these two commands.
-python batching/scripts/runner.py --flow-file batching/flows/mps/sample_flow_pdf_ocr.json --compose-file batching/docker-compose-cpu.yml --case mps
-python batching/scripts/runner.py --flow-file batching/flows/mps/sample_flow_pdf_non_ocr.json --compose-file batching/docker-compose-cpu.yml --case mps
+INPUT_TYPE=pdf_ocr
+python batching/scripts/runner.py --flow-file "batching/flows/mps/sample_flow_${INPUT_TYPE}.json" --compose-file batching/docker-compose-cpu.yml --case mps --infra-services opensearch
 ```
