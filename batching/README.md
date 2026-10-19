@@ -1,4 +1,4 @@
-# docling-pipelines-extras
+# batching
 
 ## Setup
 
@@ -23,14 +23,16 @@ brew install ollama
 
 ```bash
 export CASE=cpu FLOW_DIR=batching/flows
-docker compose --env-file .env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --wait
+docker compose --env-file batching/.env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --wait
 ```
 
 ### GPU
 
+> **macOS:** GPU mode is unavailable because it requires NVIDIA CUDA.
+
 ```bash
 export CASE=gpu FLOW_DIR=batching/flows
-docker compose --env-file .env -f batching/docker-compose-gpu.yml -f batching/docker-compose-infra.yml up -d --wait
+docker compose --env-file batching/.env -f batching/docker-compose-gpu.yml -f batching/docker-compose-infra.yml up -d --wait
 ```
 
 ### MPS
@@ -43,13 +45,13 @@ export MPS_LOG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/docpipe-mps.XXXXXX")"
 - Start OpenSearch
 
   ```bash
-  docker compose --env-file .env -f batching/docker-compose-infra.yml up -d --wait opensearch
+  docker compose --env-file batching/.env -f batching/docker-compose-infra.yml up -d --wait opensearch
   ```
 
 - Start Docpipe
 
   ```bash
-  docker compose --env-file .env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --no-deps --wait docpipe
+  docker compose --env-file batching/.env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --no-deps --wait docpipe
   ```
 
 - Start Ollama
@@ -121,6 +123,8 @@ python batching/scripts/runner.py --flow-file "batching/flows/sample_flow_${INPU
 ```
 
 ### GPU
+
+> **macOS:** GPU mode is unavailable because it requires NVIDIA CUDA.
 
 ```bash
 INPUT_TYPE=pdf_ocr
