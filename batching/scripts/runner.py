@@ -14,15 +14,17 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 import docker
 import psutil
 from matplotlib.figure import Figure
 
-from collect_results import FIELDS, TERMINAL_STATUSES, append_results, write_report
+from collect_results import CASES, FIELDS, TERMINAL_STATUSES, append_results, collect_native_logs, write_report
 
 BATCHING_DIR = Path(__file__).resolve().parents[1]
+INFRA_SERVICES = ("docling-serve", "ollama", "opensearch")
 
 SAMPLE_FIELDS = [
     "collection_id", "job_run_id", "timestamp", "phase", "scope", "target",
@@ -67,6 +69,15 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--flow-file", type=Path, required=True)
     parser.add_argument("--compose-file", type=Path, required=True)
+    parser.add_argument("--case", choices=CASES, help="Default: infer CPU/GPU from --compose-file")
+    parser.add_argument(
+        "--infra-services", nargs="+", choices=INFRA_SERVICES,
+        help="Infrastructure to start (default: all; MPS: opensearch only)",
+    )
+    parser.add_argument(
+        "--native-logs-dir", type=Path, default=os.environ.get("MPS_LOG_DIR"),
+        help="Native service log directory (default: MPS_LOG_DIR)",
+    )
     parser.add_argument("--env-file", type=Path, default=BATCHING_DIR.parent / ".env")
     parser.add_argument("--project-name")
     parser.add_argument("--api-url", default="http://localhost:8080")
@@ -86,9 +97,14 @@ def parse_arguments() -> argparse.Namespace:
         parser.error("--compose-file must select the CPU or GPU application stack")
     if not 0 < args.interval < float("inf") or not 0 < args.timeout_seconds < float("inf"):
         parser.error("Use a positive finite sampling interval and timeout")
-    hardware = args.compose_file.stem.removeprefix("docker-compose-")
-    limits = "limited" if args.compose_file.parent.name == "with_limits" else "unlimited"
-    args.case = f"{hardware}-{limits}"
+    compose_case = args.compose_file.stem.removeprefix("docker-compose-")
+    args.case = args.case or compose_case
+    if args.case not in CASES or compose_case != ("cpu" if args.case == "mps" else args.case):
+        parser.error("Use the matching CPU/GPU Compose file; MPS uses docker-compose-cpu.yml")
+    default_services = ("opensearch",) if args.case == "mps" else INFRA_SERVICES
+    args.infra_services = list(dict.fromkeys(args.infra_services or default_services))
+    if args.case == "mps" and args.infra_services != ["opensearch"]:
+        parser.error("MPS uses native inference services; --infra-services must be opensearch")
     args.project_name = args.project_name or args.compose_file.parent.name
     return args
 
@@ -273,6 +289,7 @@ class Runner:
     def __init__(self, args: argparse.Namespace):
         self.args = args
         self.flow = json.loads(args.flow_file.read_text())
+        self.embedding_models = self._find_embedding_models(self.flow)
         self.flow_name = self.flow["flow_name"]
         self.input_type = args.flow_file.stem.removeprefix("sample_flow_")
         collection_id = f"{self.input_type}_{args.case}_{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
@@ -288,9 +305,39 @@ class Runner:
             "collection_id": collection_id, "flow_file": str(args.flow_file),
             "flow_name": self.flow_name, "input_type": self.input_type, "case": args.case,
             "compose_file": str(args.compose_file), "infra_file": str(args.infra_file),
-            "project_name": args.project_name,
+            "project_name": args.project_name, "infra_services": args.infra_services,
         }
+        (self.raw_dir / "flow.json").write_text(json.dumps(self.flow, indent=2) + "\n")
         print(self.run_dir, flush=True)
+
+    @staticmethod
+    def _find_embedding_models(flow: dict) -> list[str]:
+        models = set()
+        for node in flow["flow"]:
+            if node["type"] != "embeddings":
+                continue
+            config = node.get("config", {})
+            provider = config.get("provider_config", {})
+            endpoint = urlsplit(provider.get("api_base", ""))
+            if config.get("provider") == "ollama" or endpoint.hostname == "ollama" or endpoint.port == 11434:
+                model = provider.get("model_id") or provider.get("model")
+                if not model:
+                    raise ValueError(f"Missing embedding model for {node['name']}")
+                models.add(model.removeprefix("openai/"))
+        return sorted(models)
+
+    def check_native_services(self):
+        if self.args.case != "mps":
+            return
+        for name, url in (
+            ("Docling Serve", "http://localhost:5001/ready"),
+            ("Ollama", "http://localhost:11434/api/tags"),
+        ):
+            try:
+                with urlopen(url, timeout=10) as response:
+                    response.read()
+            except OSError as error:
+                raise RuntimeError(f"Start native {name} before running MPS; readiness check failed: {url}") from error
 
     def compose_command(self) -> list[str]:
         command = ["docker", "compose"]
@@ -324,25 +371,25 @@ class Runner:
         self.stack_started = True
         # Clear leftovers from an interrupted run before creating this environment.
         subprocess.run(self.compose_command() + ["down", "-v", "--remove-orphans"], check=True)
-        subprocess.run(self.compose_command() + ["up", "-d", "--wait"], check=True)
+        subprocess.run(self.compose_command() + ["up", "-d", "--wait", "--no-deps", *self.args.infra_services], check=True)
+        subprocess.run(self.compose_command() + ["up", "-d", "--wait", "--no-deps", "docpipe"], check=True)
         self.sampler.check()
 
     def download_embedding_models(self):
         self.sampler.phase = "model_download"
-        models = set()
-        for node in self.flow["flow"]:
-            if node["type"] != "embeddings":
-                continue
-            config = node.get("config", {})
-            provider = config.get("provider_config", {})
-            if config.get("provider") == "ollama" or "ollama" in provider.get("api_base", ""):
-                model = provider.get("model_id") or provider.get("model")
-                if not model:
-                    raise ValueError(f"Missing embedding model for {node['name']}")
-                models.add(model.removeprefix("openai/"))
-        self.metadata["embedding_models"] = sorted(models)
-        for model in sorted(models):
-            subprocess.run(self.compose_command() + ["exec", "-T", "ollama", "ollama", "pull", model], check=True)
+        self.metadata["embedding_models"] = self.embedding_models
+        for model in self.embedding_models:
+            if "ollama" in self.args.infra_services:
+                subprocess.run(self.compose_command() + ["exec", "-T", "ollama", "ollama", "pull", model], check=True)
+            else:
+                payload = json.dumps({"name": model, "stream": False}).encode()
+                with urlopen(Request(
+                    "http://localhost:11434/api/pull", data=payload,
+                    headers={"Content-Type": "application/json"},
+                ), timeout=self.args.timeout_seconds) as response:
+                    result = json.load(response)
+                if result.get("error"):
+                    raise RuntimeError(f"Ollama model pull failed: {result['error']}")
         self.sampler.check()
 
     def create_flow(self):
@@ -388,8 +435,19 @@ class Runner:
         (self.raw_dir / "node_execution.log").write_text("\n\n".join(logs) + "\n")
 
     def _copy_job_run_files(self):
+        source = subprocess.check_output(self.compose_command() + [
+            "exec", "-T", "docpipe", "python", "-c",
+            "import os, sys; from pathlib import Path; "
+            "base = Path(os.environ.get('DOCPIPE_JOB_STATS_BASE_DIR') or "
+            "str(Path(os.environ.get('DOCPIPE_DATA_PATH', './data')) / 'job_stats')); "
+            "source = base / sys.argv[1]; print(source) if source.is_dir() else None",
+            self.job_run_id,
+        ], text=True).strip()
+        self.metadata["job_run_files_available"] = bool(source)
+        if not source:
+            return
         subprocess.run(self.compose_command() + [
-            "cp", f"docpipe:/data/job_stats/{self.job_run_id}", str(self.raw_dir / "job_run"),
+            "cp", f"docpipe:{source}", str(self.raw_dir / "job_run"),
         ], check=True)
 
     def collect_job_report(self):
@@ -416,6 +474,10 @@ class Runner:
         if self.stack_started:
             # Both application and infrastructure files are included in this command.
             subprocess.run(self.compose_command() + ["down", "-v", "--remove-orphans"], check=True)
+
+    def collect_native_service_logs(self):
+        if self.args.case == "mps" and self.args.native_logs_dir is not None:
+            collect_native_logs(source=self.args.native_logs_dir, destination=self.raw_dir)
 
     def stop_resource_collection(self):
         try:
@@ -471,6 +533,7 @@ class Runner:
 def main() -> int:
     runner = Runner(parse_arguments())
     try:
+        runner.check_native_services()
         runner.start_resource_collection()
         runner.start_containers()
         runner.download_embedding_models()
@@ -483,6 +546,7 @@ def main() -> int:
         runner.finish_step(action=runner.collect_job_run_files)
         runner.finish_step(action=runner.collect_job_report)
         runner.finish_step(action=runner.collect_container_logs)
+        runner.finish_step(action=runner.collect_native_service_logs)
         runner.finish_step(action=runner.stop_containers)
         runner.finish_step(action=runner.stop_resource_collection)
         runner.finish_step(action=runner.create_reports)

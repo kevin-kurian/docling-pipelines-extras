@@ -2,179 +2,126 @@
 
 ## Setup
 
-From this repository root:
+### CPU/GPU
 
 ```bash
-uv venv --python 3.12 --no-python-downloads .venv
+uv sync --locked
 source .venv/bin/activate
 ```
 
-## Build and upload
-
-Clone the `docling-pipelines` source repository into the same parent directory as
-`docling-pipelines-extras`, so it is available at `../docling-pipelines` when running
-commands from this repository root. The Docker builds below use that checkout as
-their build context. Use your Docker Hub token at login.
+### MPS
 
 ```bash
-docker login -u kevin1kurian
-
-docker build --platform linux/amd64 --build-arg COMPUTE_BACKEND=cpu -f batching/Dockerfile -t docling-pipelines:v2.0.1-cpu ../docling-pipelines
-docker tag docling-pipelines:v2.0.1-cpu kevin1kurian/docling-pipelines:v2.0.1-cpu
-docker push kevin1kurian/docling-pipelines:v2.0.1-cpu
-
-docker build --platform linux/amd64 --build-arg COMPUTE_BACKEND=gpu -f batching/Dockerfile -t docling-pipelines:v2.0.1-gpu ../docling-pipelines
-docker tag docling-pipelines:v2.0.1-gpu kevin1kurian/docling-pipelines:v2.0.1-gpu
-docker push kevin1kurian/docling-pipelines:v2.0.1-gpu
+uv sync --locked --extra mps
+source .venv/bin/activate
+brew install ollama
 ```
 
-## Manual execution
+## Start the environment
 
-Run the commands below from the `docling-pipelines-extras` directory. Use the same
-terminal for all steps so the variables set in earlier commands remain available.
-
-- PDF: 10 files, 96 pages — `batching/flows/sample_flow_pdf.json`
-- Text: 100 files — `batching/flows/sample_flow_text.json`
-- GPU cases require an NVIDIA GPU available to Docker.
-
-### Start and stop each case
-
-Start one stack, run and collect PDF and text results, then stop it.
-
-**CPU, unlimited**
+### CPU
 
 ```bash
-export CASE=cpu-unlimited
+export CASE=cpu FLOW_DIR=batching/flows
 docker compose --env-file .env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --wait
 ```
 
-```bash
-docker compose --env-file .env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml down
-```
-
-**CPU, limited**
+### GPU
 
 ```bash
-export CASE=cpu-limited
-docker compose --env-file .env -f batching/with_limits/docker-compose-cpu.yml -f batching/with_limits/docker-compose-infra.yml up -d --wait
-```
-
-```bash
-docker compose --env-file .env -f batching/with_limits/docker-compose-cpu.yml -f batching/with_limits/docker-compose-infra.yml down
-```
-
-**GPU, unlimited**
-
-```bash
-export CASE=gpu-unlimited
+export CASE=gpu FLOW_DIR=batching/flows
 docker compose --env-file .env -f batching/docker-compose-gpu.yml -f batching/docker-compose-infra.yml up -d --wait
 ```
 
+### MPS
+
 ```bash
-docker compose --env-file .env -f batching/docker-compose-gpu.yml -f batching/docker-compose-infra.yml down
+export CASE=mps FLOW_DIR=batching/flows/mps
+export MPS_LOG_DIR="$(mktemp -d "${TMPDIR:-/tmp}/docpipe-mps.XXXXXX")"
 ```
 
-**GPU, limited**
+- Start OpenSearch
+
+  ```bash
+  docker compose --env-file .env -f batching/docker-compose-infra.yml up -d --wait opensearch
+  ```
+
+- Start Docpipe
+
+  ```bash
+  docker compose --env-file .env -f batching/docker-compose-cpu.yml -f batching/docker-compose-infra.yml up -d --no-deps --wait docpipe
+  ```
+
+- Start Ollama
+
+  ```bash
+  nohup env OLLAMA_HOST=0.0.0.0:11434 ollama serve > "$MPS_LOG_DIR/ollama.log" 2>&1 &
+  curl --fail -sS --retry 60 --retry-delay 2 --retry-all-errors --max-time 5 http://localhost:11434/api/tags
+  ```
+
+- Start Docling Serve
+
+  ```bash
+  nohup env DOCLING_DEVICE=mps docling-serve run --host 0.0.0.0 --port 5001 > "$MPS_LOG_DIR/docling-serve.log" 2>&1 &
+  curl --fail -sS --retry 180 --retry-delay 5 --retry-all-errors --max-time 5 http://localhost:5001/ready
+  ```
+
+## Pull the embedding model
 
 ```bash
-export CASE=gpu-limited
-docker compose --env-file .env -f batching/with_limits/docker-compose-gpu.yml -f batching/with_limits/docker-compose-infra.yml up -d --wait
+curl --fail-with-body -sS http://localhost:11434/api/pull -H 'Content-Type: application/json' -d '{"name":"nomic-embed-text","stream":false}'
 ```
 
+## Create the flow
+
+Set `INPUT_TYPE` to `pdf` or `text`.
+
 ```bash
-docker compose --env-file .env -f batching/with_limits/docker-compose-gpu.yml -f batching/with_limits/docker-compose-infra.yml down
+INPUT_TYPE=pdf
+FLOW_NAME="sample_flow_${INPUT_TYPE}_${CASE}_$(date +%s)"
+FLOW_ID=$(sed "s|\"flow_name\": \"[^\"]*\"|\"flow_name\": \"$FLOW_NAME\"|" "$FLOW_DIR/sample_flow_${INPUT_TYPE}.json" | curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/flows -H 'Content-Type: application/json' --data-binary @- | python -c 'import json,sys; print(json.load(sys.stdin)["flow_id"])')
 ```
 
-### Common test steps
-
-Pull the embedding model:
+## Start the job run
 
 ```bash
-curl --fail-with-body -sS -X POST http://localhost:11434/api/pull \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"nomic-embed-text"}'
+JOB_RUN_ID=$(curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/job_runs -H 'Content-Type: application/json' -d "{\"entity\":{\"job\":{\"asset_ref\":\"$FLOW_ID\"}}}" | python -c 'import json,sys; print(json.load(sys.stdin)["job_run_id"])')
 ```
 
-Submit one flow, run it, then repeat for the other input:
+## Poll for completion
 
 ```bash
-# Submit the PDF flow
-export INPUT_TYPE=pdf
-FLOW_NAME="sample_flow_pdf_${CASE}_$(date +%s)"
-FLOW_ID=$(sed "s|\"flow_name\": \"sample_flow_pdf\"|\"flow_name\": \"$FLOW_NAME\"|" batching/flows/sample_flow_pdf.json \
-  | curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/flows \
-      -H 'Content-Type: application/json' --data-binary @- \
-  | python3 -c 'import json,sys; print(json.load(sys.stdin)["flow_id"])')
-```
-
-```bash
-# Submit the TXT flow
-export INPUT_TYPE=text
-FLOW_NAME="sample_flow_text_${CASE}_$(date +%s)"
-FLOW_ID=$(sed "s|\"flow_name\": \"sample_flow_text\"|\"flow_name\": \"$FLOW_NAME\"|" batching/flows/sample_flow_text.json \
-  | curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/flows \
-      -H 'Content-Type: application/json' --data-binary @- \
-  | python3 -c 'import json,sys; print(json.load(sys.stdin)["flow_id"])')
-```
-
-Run, poll, and collect before stopping the stack:
-
-```bash
-JOB_RUN_ID=$(curl --fail-with-body -sS -X POST http://localhost:8080/api/v1/job_runs \
-  -H 'Content-Type: application/json' \
-  -d "{\"entity\":{\"job\":{\"asset_ref\":\"$FLOW_ID\"}}}" \
-  | python3 -c 'import json,sys; print(json.load(sys.stdin)["job_run_id"])')
-
-while :; do
-  curl --fail-with-body -sS --max-time 30 \
-    "http://localhost:8080/api/v1/job_runs/$JOB_RUN_ID" -o /tmp/docling-pipelines-job.json
-  STATUS=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["job_stats"]["status"])' /tmp/docling-pipelines-job.json)
+while STATUS=$(curl --fail-with-body -sS --max-time 30 "http://localhost:8080/api/v1/job_runs/$JOB_RUN_ID" | python -c 'import json,sys; print(json.load(sys.stdin)["job_stats"]["status"])'); do
+  echo "$STATUS"
   case "$STATUS" in
     Completed|CompletedWithErrors|CompletedWithWarnings|Failed|Canceled|Cancelled|Aborted) break ;;
   esac
   sleep 1
 done
-
-python3 batching/scripts/collect_results.py \
-  --job-run-id "$JOB_RUN_ID" --flow-name "$FLOW_NAME" \
-  --case "$CASE" --input-type "$INPUT_TYPE"
-rm -f /tmp/docling-pipelines-job.json
 ```
 
-### Results
-
-Each run is independent. Read its `REPORT.md` for status, document counts,
-operator timings, and resource usage with an embedded graph when collected.
-Supporting files stay under `_`.
-
-```text
-batching/results/
-├── pdf_cpu-unlimited_<timestamp>/
-│   ├── REPORT.md
-│   └── _/
-├── text_cpu-limited_<timestamp>/
-│   ├── REPORT.md
-│   └── _/
-└── _/
-```
-
-## Automatic test runner
-
-Run from this repository root with Docker running and `.env` configured:
+## Generate the report
 
 ```bash
-source .venv/bin/activate
-uv pip install -r requirements.txt
-python batching/scripts/runner.py \
-  --flow-file batching/flows/sample_flow_pdf.json \
-  --compose-file batching/docker-compose-cpu.yml
+python batching/scripts/collect_results.py --job-run-id "$JOB_RUN_ID" --flow-name "$FLOW_NAME" --case "$CASE" --input-type "$INPUT_TYPE"
 ```
 
-Run `python batching/scripts/runner.py --help` for optional settings.
+## Automatic runs
 
-### Review the results
+### CPU
 
-Each run saves its results under `batching/results/`. The runner prints the path
-to `REPORT.md`; start there for an overview. Inside the run's `_` folder, you'll
-find the job report (`summary.csv`), complete logs (`flow_run.log`), and resource
-data and graphs (`resource_*`).
+```bash
+python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf.json --compose-file batching/docker-compose-cpu.yml
+```
+
+### GPU
+
+```bash
+python batching/scripts/runner.py --flow-file batching/flows/sample_flow_pdf.json --compose-file batching/docker-compose-gpu.yml
+```
+
+### MPS
+
+```bash
+python batching/scripts/runner.py --flow-file batching/flows/mps/sample_flow_pdf.json --compose-file batching/docker-compose-cpu.yml --case mps --infra-services opensearch
+```

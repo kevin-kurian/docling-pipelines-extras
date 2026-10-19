@@ -4,6 +4,8 @@
 import argparse
 import csv
 import json
+import os
+import shutil
 import subprocess
 import sys
 from datetime import UTC, datetime
@@ -16,7 +18,7 @@ TERMINAL_STATUSES = {
     "Completed", "CompletedWithErrors", "CompletedWithWarnings", "Failed",
     "Canceled", "Cancelled", "Aborted",
 }
-CASES = ("cpu-unlimited", "cpu-limited", "gpu-unlimited", "gpu-limited")
+CASES = ("cpu", "gpu", "mps")
 FIELDS = [
     "collection_id", "case", "input_type", "flow_name", "job_id", "job_run_id", "status",
     "duration_seconds", "completed_docs", "total_docs", "failed_docs",
@@ -31,12 +33,11 @@ def download(url: str) -> bytes:
 
 def collect_container_logs(*, case: str, destination: Path) -> None:
     """Collect the complete docpipe container log before stopping the stack."""
-    compose_dir = BATCHING_DIR / "with_limits" if case.endswith("-limited") else BATCHING_DIR
-    hardware = case.split("-")[0]
+    compose_case = "cpu" if case == "mps" else case
     command = [
         "docker", "compose", "--env-file", str(BATCHING_DIR.parent / ".env"),
-        "-f", str(compose_dir / f"docker-compose-{hardware}.yml"),
-        "-f", str(compose_dir / "docker-compose-infra.yml"), "ps", "-q", "docpipe",
+        "-f", str(BATCHING_DIR / f"docker-compose-{compose_case}.yml"),
+        "-f", str(BATCHING_DIR / "docker-compose-infra.yml"), "ps", "-q", "docpipe",
     ]
     result = subprocess.run(command, capture_output=True, text=True, timeout=30)
     containers = result.stdout.split()
@@ -63,6 +64,12 @@ def append_results(*, destination: Path, row: dict) -> None:
         if header is None:
             writer.writeheader()
         writer.writerow(row)
+
+
+def collect_native_logs(*, source: Path, destination: Path) -> None:
+    """Copy native inference service logs into a collected run."""
+    for name in ("docling-serve.log", "ollama.log"):
+        shutil.copyfile(source / name, destination / name)
 
 
 def write_report(*, run_dir: Path, notes: tuple[str, ...] = ()) -> None:
@@ -153,6 +160,11 @@ def collect(args: argparse.Namespace) -> int:
         collect_container_logs(case=args.case, destination=raw_dir / "flow_run.log")
     except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
         errors.append(f"flow_run.log: {error}")
+    if args.case == "mps" and args.native_logs_dir is not None:
+        try:
+            collect_native_logs(source=args.native_logs_dir, destination=raw_dir)
+        except OSError as error:
+            errors.append(f"native logs: {error}")
 
     nodes = {node["name"]: node.get("time_taken", 0) for node in stats.get("node_stats", {}).values()}
     row = {
@@ -184,6 +196,10 @@ def main() -> int:
     parser.add_argument("--input-type", required=True, choices=("pdf", "text"))
     parser.add_argument("--api-url", default="http://localhost:8080")
     parser.add_argument("--results-dir", type=Path, default=BATCHING_DIR / "results")
+    parser.add_argument(
+        "--native-logs-dir", type=Path, default=os.environ.get("MPS_LOG_DIR"),
+        help="Native service log directory (default: MPS_LOG_DIR)",
+    )
     try:
         return collect(parser.parse_args())
     except (RuntimeError, OSError, ValueError, KeyError) as error:

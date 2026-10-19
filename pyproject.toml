@@ -1,0 +1,21 @@
+[project]
+name = "docling-pipelines-extras"
+version = "0.1.0"
+description = "Benchmark tooling for Docling Pipelines"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "docker==7.2.0",
+    "matplotlib==3.11.2",
+    "psutil==7.2.2",
+]
+
+[project.optional-dependencies]
+mps = [
+    "docling-serve[rapidocr,easyocr]==1.37.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "docling[rapidocr]==2.132.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "torch==2.13.0; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+
+[tool.uv]
+package = false
