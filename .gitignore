@@ -4,6 +4,9 @@
 # Local environment
 .env
 
+__pycache__/
+results/
+
 # Workspace Files
 /docling-pipelines
 

@@ -139,17 +139,25 @@ rm -f /tmp/docling-pipelines-job.json
 
 ### Results
 
-Generated files:
+Each run is independent. Read its `REPORT.md` for status, document counts,
+operator timings, and resource usage with an embedded graph when collected.
+Supporting files stay under `_`.
 
 ```text
 batching/results/
-├── results.csv
-└── <flow_name>_<timestamp>/
-    ├── flow_run.log
-    ├── node_execution.log
-    ├── job_stats.json
-    └── summary.csv
+├── pdf_cpu-unlimited_<timestamp>/
+│   ├── REPORT.md
+│   └── _/
+├── text_cpu-limited_<timestamp>/
+│   ├── REPORT.md
+│   └── _/
+└── _/
 ```
+
+Run-level `_` folders contain raw measurements, API responses, CSVs, and logs.
+The results-level `_` folder contains the machine-readable index, shared setup
+logs, and earlier exports. Multiple flows and repetitions create sibling run
+folders directly, without a benchmark parent folder.
 
 ## Run tests with CPU and memory collection
 
@@ -184,13 +192,7 @@ parameters to match your test.
 - `--repeat`, `--interval`, `--before-seconds`, `--after-seconds`, `--timeout-seconds`:
   configure repetitions, sampling windows, and the maximum job run time.
 
-Additional generated files in each run folder:
-
-```text
-resource_samples.csv
-resource_samples.png
-resource_summary.csv
-run_metadata.json
-```
+Resource summaries and the CPU/memory graph are included in `REPORT.md`.
+Their source CSVs, image, and run metadata are stored under that run's `_` folder.
 
 Run `python batching/scripts/run_test.py --help` for all parameters.

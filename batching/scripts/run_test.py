@@ -19,7 +19,7 @@ import docker
 import psutil
 from matplotlib.figure import Figure
 
-from collect_results import FIELDS, TERMINAL_STATUSES, append_results
+from collect_results import FIELDS, TERMINAL_STATUSES, append_results, write_report
 
 SAMPLE_FIELDS = [
     "collection_id", "job_run_id", "timestamp", "phase", "scope", "target",
@@ -80,7 +80,7 @@ class Sampler:
         self.processes = {}
         self.pool = ThreadPoolExecutor(max_workers=1)
         self.future = None
-        self.output = (run_dir / "resource_samples.csv").open("w", newline="")
+        self.output = (run_dir / "_" / "resource_samples.csv").open("w", newline="")
         self.writer = csv.DictWriter(self.output, fieldnames=SAMPLE_FIELDS)
         self.writer.writeheader()
 
@@ -169,7 +169,7 @@ class Sampler:
 
 def plot_samples(run_dir: Path):
     series = defaultdict(list)
-    with (run_dir / "resource_samples.csv").open() as source:
+    with (run_dir / "_" / "resource_samples.csv").open() as source:
         for row in csv.DictReader(source):
             series[row["scope"], row["target"]].append(row)
     origin = min(datetime.fromisoformat(row["timestamp"]) for rows in series.values() for row in rows)
@@ -192,12 +192,12 @@ def plot_samples(run_dir: Path):
             for start, phase in phases:
                 axis.axvline(start, color="gray", linestyle="--", linewidth=0.6)
                 axis.text(start, 0.98, phase, transform=axis.get_xaxis_transform(), va="top", fontsize=8)
-    figure.savefig(run_dir / "resource_samples.png", dpi=150, bbox_inches="tight")
+    figure.savefig(run_dir / "_" / "resource_samples.png", dpi=150, bbox_inches="tight")
 
 
 def summarize(*, run_dir: Path, job_run_id: str):
     groups = defaultdict(list)
-    with (run_dir / "resource_samples.csv").open() as source:
+    with (run_dir / "_" / "resource_samples.csv").open() as source:
         for row in csv.DictReader(source):
             groups[row["scope"], row["target"], row["phase"]].append(row)
     summaries = []
@@ -212,7 +212,7 @@ def summarize(*, run_dir: Path, job_run_id: str):
     baselines = {(row["scope"], row["target"]): row["memory_used_bytes_avg"] for row in summaries if row["phase"] == "before"}
     for row in summaries:
         row["memory_delta_from_baseline_bytes"] = row["memory_used_bytes_avg"] - baselines[row["scope"], row["target"]]
-    with (run_dir / "resource_summary.csv").open("w", newline="") as output:
+    with (run_dir / "_" / "resource_summary.csv").open("w", newline="") as output:
         writer = csv.DictWriter(output, fieldnames=list(summaries[0]) if summaries else ["collection_id"])
         writer.writeheader()
         writer.writerows(summaries)
@@ -223,11 +223,13 @@ def collect(*, args: argparse.Namespace, run_dir: Path, run_id: str, input_type:
     path = f"/api/v1/job_runs/{run_id}"
     payload = json.loads(request(args=args, path=path + "?include_logs=true"))
     stats = payload["job_stats"]
-    (run_dir / "job_stats.json").write_text(json.dumps(payload, indent=2) + "\n")
-    (run_dir / "summary.csv").write_bytes(request(args=args, path=path + "/report"))
+    raw_dir = run_dir / "_"
+    (raw_dir / "job_stats.json").write_text(json.dumps(payload, indent=2) + "\n")
+    write_report(run_dir=run_dir)
+    (raw_dir / "summary.csv").write_bytes(request(args=args, path=path + "/report"))
     logs = [payload[node] for node in payload.get("node_sequence", []) if isinstance(payload.get(node), str)]
-    (run_dir / "node_execution.log").write_text("\n\n".join(logs) + "\n")
-    with (run_dir / "flow_run.log").open("wb") as output:
+    (raw_dir / "node_execution.log").write_text("\n\n".join(logs) + "\n")
+    with (raw_dir / "flow_run.log").open("wb") as output:
         for container in containers:
             output.write(f"\n=== {container.name} ===\n".encode())
             output.flush()
@@ -241,17 +243,21 @@ def collect(*, args: argparse.Namespace, run_dir: Path, run_id: str, input_type:
                duration_seconds=stats["duration"], artifacts_dir=run_dir.name,
                node_timings_seconds=json.dumps({node["name"]: node["time_taken"] for node in stats.get("node_stats", {}).values()}))
     row.update({key: stats.get(key, 0) for key in ("completed_docs", "total_docs", "failed_docs", "skipped_docs")})
-    append_results(destination=args.results_dir / "results.csv", row=row)
+    (args.results_dir / "_").mkdir(exist_ok=True)
+    append_results(destination=args.results_dir / "_" / "results.csv", row=row)
+    print(f"Report: {run_dir / 'REPORT.md'}", flush=True)
 
 
 def run_flow(*, args: argparse.Namespace, flow_file: Path, client, containers: list):
     flow = json.loads(flow_file.read_text())
-    name = f"{flow_file.stem}_{args.case}_{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
+    input_type = flow_file.stem.removeprefix("sample_flow_")
+    name = f"{input_type}_{args.case}_{datetime.now(UTC).strftime('%Y%m%dT%H%M%S%fZ')}"
     flow["flow_name"] = name
     run_dir = args.results_dir / name
-    run_dir.mkdir(parents=True)
+    (run_dir / "_").mkdir(parents=True)
     flow_id = json.loads(request(args=args, path="/api/v1/flows", payload=flow))["flow_id"]
-    metadata = {"collection_id": name, "flow_file": str(flow_file), "case": args.case, "flow_id": flow_id}
+    metadata = {"collection_id": name, "flow_file": str(flow_file), "input_type": input_type,
+                "case": args.case, "flow_id": flow_id}
     sampler = Sampler(args=args, client=client, containers=containers, run_dir=run_dir)
     print(run_dir, flush=True)
     try:
@@ -276,11 +282,11 @@ def run_flow(*, args: argparse.Namespace, flow_file: Path, client, containers: l
         sampler.phase = "after"
         sampler.wait(args.after_seconds)
     finally:
-        (run_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
+        (run_dir / "_" / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
         sampler.close()
         plot_samples(run_dir)
         groups = summarize(run_dir=run_dir, job_run_id=metadata.get("job_run_id", ""))
-    collect(args=args, run_dir=run_dir, run_id=run_id, input_type=flow_file.stem, containers=containers)
+    collect(args=args, run_dir=run_dir, run_id=run_id, input_type=input_type, containers=containers)
     if {phase for _, _, phase in groups} != {"before", "during", "after"}:
         raise RuntimeError("Missing a measurement phase; reduce --interval for short jobs")
     if status not in {"Completed", "CompletedWithWarnings"}:

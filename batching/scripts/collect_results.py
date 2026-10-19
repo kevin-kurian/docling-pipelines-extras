@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect a finished batching run's logs, API response, and CSV report."""
+"""Collect one finished run into REPORT.md with supporting files under _."""
 
 import argparse
 import csv
@@ -70,6 +70,53 @@ def append_results(*, destination: Path, row: dict) -> None:
         writer.writerow(row)
 
 
+def write_report(*, run_dir: Path, notes: tuple[str, ...] = ()) -> None:
+    raw_dir = run_dir / "_"
+    payload = json.loads((raw_dir / "job_stats.json").read_text())
+    stats = payload["job_stats"]
+    metadata_path = raw_dir / "run_metadata.json"
+    metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
+    case = metadata.get("case", "")
+    input_type = metadata.get("input_type", Path(metadata.get("flow_file", "")).stem.removeprefix("sample_flow_"))
+    lines = [
+        f"# {input_type.upper()} / {case}", "",
+        f"- Status: {stats['status']}",
+        f"- Duration: {stats.get('duration', 0)} seconds",
+        f"- Documents: {stats.get('completed_docs', 0)}/{stats.get('total_docs', 0)} completed; "
+        f"{stats.get('failed_docs', 0)} failed; {stats.get('skipped_docs', 0)} skipped",
+        f"- Reported pages: {stats.get('total_pages_processed', 'unavailable')}",
+        f"- Job run: `{stats['job_run_id']}`",
+    ]
+    if stats.get("start_time"):
+        started = datetime.fromtimestamp(stats["start_time"], UTC).isoformat()
+        lines.append(f"- Started: {started} (UTC)")
+    lines += ["", *notes, "", "## Operator timings", "",
+              "| Operator | Status | Seconds |", "|---|---|---:|"]
+    for node in stats.get("node_stats", {}).values():
+        lines.append(f"| {node['name']} | {node.get('node_status', '')} | {node.get('time_taken', 0)} |")
+    resource_path = raw_dir / "resource_summary.csv"
+    if resource_path.exists():
+        lines += ["", "## Resources during execution", "",
+                  "CPU is in cores; memory is in GiB. Host, VM, and container figures overlap.", "",
+                  "| Scope | Target | Avg CPU | Peak CPU | Avg memory | Peak memory |",
+                  "|---|---|---:|---:|---:|---:|"]
+        with resource_path.open() as source:
+            for row in csv.DictReader(source):
+                if row["phase"] != "during":
+                    continue
+                lines.append(
+                    f"| {row['scope']} | {row['target']} | {float(row['cpu_cores_avg']):.2f} | "
+                    f"{float(row['cpu_cores_max']):.2f} | {float(row['memory_used_bytes_avg']) / 1024 ** 3:.2f} | "
+                    f"{float(row['memory_used_bytes_max']) / 1024 ** 3:.2f} |"
+                )
+    if (raw_dir / "resource_samples.png").exists():
+        lines += ["", "## Resource timeline", "", "![CPU and memory before, during, and after the run](_/resource_samples.png)"]
+    if metadata.get("collection_errors"):
+        lines += ["", f"Collection errors: {metadata['collection_errors']}"]
+    lines += ["", "Supporting data and logs: [_](_/).", ""]
+    (run_dir / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
+
+
 def collect(args: argparse.Namespace) -> int:
     run_id = str(args.job_run_id)
     url = f"{args.api_url.rstrip('/')}/api/v1/job_runs/{run_id}"
@@ -86,27 +133,29 @@ def collect(args: argparse.Namespace) -> int:
     results_dir.mkdir(parents=True, exist_ok=True)
     while True:
         timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
-        collection_id = f"{args.flow_name}_{timestamp}"
+        collection_id = f"{args.input_type}_{args.case}_{timestamp}"
         run_dir = results_dir / collection_id
         try:
             run_dir.mkdir()
         except FileExistsError:
             continue
         break
-    (run_dir / "job_stats.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    raw_dir = run_dir / "_"
+    raw_dir.mkdir()
+    (raw_dir / "job_stats.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     node_logs = [payload[node_id] for node_id in payload.get("node_sequence", []) if isinstance(payload.get(node_id), str)]
-    (run_dir / "node_execution.log").write_text(
+    (raw_dir / "node_execution.log").write_text(
         f"Flow: {args.flow_name}\nJob run ID: {run_id}\n\n" + "\n\n".join(node_logs) + "\n",
         encoding="utf-8",
     )
 
     errors = []
     try:
-        (run_dir / "summary.csv").write_bytes(download(f"{url}/report"))
+        (raw_dir / "summary.csv").write_bytes(download(f"{url}/report"))
     except (RuntimeError, OSError) as error:
         errors.append(f"summary.csv: {error}")
     try:
-        collect_container_logs(case=args.case, stats=stats, destination=run_dir / "flow_run.log")
+        collect_container_logs(case=args.case, stats=stats, destination=raw_dir / "flow_run.log")
     except (RuntimeError, OSError, subprocess.TimeoutExpired) as error:
         errors.append(f"flow_run.log: {error}")
 
@@ -119,9 +168,14 @@ def collect(args: argparse.Namespace) -> int:
         "skipped_docs": stats.get("skipped_docs", 0), "node_timings_seconds": json.dumps(nodes, sort_keys=True),
         "artifacts_dir": str(run_dir.relative_to(results_dir)), "collection_errors": " | ".join(errors),
     }
-    append_results(destination=results_dir / "results.csv", row=row)
+    metadata = {"case": args.case, "input_type": args.input_type, "flow_name": args.flow_name,
+                "job_run_id": run_id, "collection_errors": row["collection_errors"]}
+    (raw_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    write_report(run_dir=run_dir)
+    (results_dir / "_").mkdir(exist_ok=True)
+    append_results(destination=results_dir / "_" / "results.csv", row=row)
     print(f"{args.case} / {args.input_type}: {stats['status']}, {stats.get('duration', 0)} seconds")
-    print(f"Artifacts: {run_dir}\nResults: {results_dir / 'results.csv'}")
+    print(f"Report: {run_dir / 'REPORT.md'}")
     for error in errors:
         print(error, file=sys.stderr)
     return 1 if errors else 0
