@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow_pdf",
+  "flow_name": "sample_flow_pdf_ocr_mps",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -13,8 +13,9 @@
         "include_filter": "pdf",
         "provider": "filesystem",
         "provider_config": {
+          "recursive": false,
           "paths": [
-            "/documents"
+            "/documents/ocr"
           ]
         }
       }
@@ -27,7 +28,11 @@
         "text_extraction": {
           "provider": "docling_serve",
           "provider_config": {
-            "base_url": "http://docling-serve:5001"
+            "base_url": "http://host.docker.internal:5001",
+            "ocr": {
+              "enabled": true,
+              "engine": "ocrmac"
+            }
           }
         }
       },
@@ -43,7 +48,7 @@
         "chunk_size": 512,
         "provider": "docling_serve",
         "provider_config": {
-          "api_base": "http://docling-serve:5001"
+          "api_base": "http://host.docker.internal:5001"
         }
       },
       "depends_on": [
@@ -57,7 +62,7 @@
         "provider": "litellm",
         "provider_config": {
           "model_id": "openai/nomic-embed-text",
-          "api_base": "http://ollama:11434/v1",
+          "api_base": "http://host.docker.internal:11434/v1",
           "api_key": "placeholder"
         }
       },

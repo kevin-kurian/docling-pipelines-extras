@@ -27,7 +27,11 @@
         "text_extraction": {
           "provider": "docling_serve",
           "provider_config": {
-            "base_url": "http://host.docker.internal:5001"
+            "base_url": "http://host.docker.internal:5001",
+            "ocr": {
+              "enabled": true,
+              "engine": "ocrmac"
+            }
           }
         }
       },

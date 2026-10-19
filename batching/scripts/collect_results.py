@@ -193,7 +193,7 @@ def main() -> int:
     parser.add_argument("--job-run-id", required=True, type=UUID)
     parser.add_argument("--flow-name", required=True)
     parser.add_argument("--case", required=True, choices=CASES)
-    parser.add_argument("--input-type", required=True, choices=("pdf", "text"))
+    parser.add_argument("--input-type", required=True, choices=("pdf_ocr", "pdf_non_ocr", "text"))
     parser.add_argument("--api-url", default="http://localhost:8080")
     parser.add_argument("--results-dir", type=Path, default=BATCHING_DIR / "results")
     parser.add_argument(

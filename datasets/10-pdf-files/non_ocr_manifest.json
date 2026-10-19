@@ -1,0 +1,134 @@
+{
+  "source": {
+    "repo_id": "docling-project/performance-dataset-bo10k",
+    "revision": "760d04c4855ad06a2715fabe07ba6c98d472aa1e"
+  },
+  "classification": "non-ocr",
+  "classification_is_derived": true,
+  "summary": {
+    "documents": 10,
+    "pages": 102,
+    "bytes": 2990056
+  },
+  "files": [
+    {
+      "source": "pdf/1688300.pdf",
+      "path": "pdf/non-ocr/1688300.pdf",
+      "bytes": 113827,
+      "sha256": "3673086e59fbdc9ffeff971204d1f7953c77400c5359650b9bd95921ce8571f2",
+      "classification": "non-ocr",
+      "pages": 1,
+      "total_native_alphanumeric_chars": 740,
+      "max_image_area_fraction": 0.0274,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1800645.pdf",
+      "path": "pdf/non-ocr/1800645.pdf",
+      "bytes": 187490,
+      "sha256": "3a1018a1ab25273d98789905b7ea03f79cc588cfe384ef952dc92a5c383f062f",
+      "classification": "non-ocr",
+      "pages": 3,
+      "total_native_alphanumeric_chars": 2476,
+      "max_image_area_fraction": 0.0791,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1252699.pdf",
+      "path": "pdf/non-ocr/1252699.pdf",
+      "bytes": 747134,
+      "sha256": "286654ae879c305a21b474f592078d144e17ea5e65f0e7d19561d3014d5fd572",
+      "classification": "non-ocr",
+      "pages": 36,
+      "total_native_alphanumeric_chars": 59019,
+      "max_image_area_fraction": 0.0635,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1753512.pdf",
+      "path": "pdf/non-ocr/1753512.pdf",
+      "bytes": 211641,
+      "sha256": "388cd877cbe72d84d7e9f2a697c7d06a298085d157190d6bd19e058cdfe19ce7",
+      "classification": "non-ocr",
+      "pages": 2,
+      "total_native_alphanumeric_chars": 2738,
+      "max_image_area_fraction": 0.0253,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/2411065.pdf",
+      "path": "pdf/non-ocr/2411065.pdf",
+      "bytes": 535454,
+      "sha256": "4dc6217dc9026dbe9fecf58bf9e7d079b713cfb99f31fa502c1701cf1741101c",
+      "classification": "non-ocr",
+      "pages": 3,
+      "total_native_alphanumeric_chars": 4126,
+      "max_image_area_fraction": 0.1009,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1095209.pdf",
+      "path": "pdf/non-ocr/1095209.pdf",
+      "bytes": 87721,
+      "sha256": "235306a712abbad80d60a852abfa35e85b3ff42bb7cfd976248ee2eaf6f47f6e",
+      "classification": "non-ocr",
+      "pages": 6,
+      "total_native_alphanumeric_chars": 4964,
+      "max_image_area_fraction": 0.0099,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1065962.pdf",
+      "path": "pdf/non-ocr/1065962.pdf",
+      "bytes": 485373,
+      "sha256": "2260e77b76ff3309e2cc0d3ef0f952ac01f9cd6dafd36a6a83cee88c74b55d19",
+      "classification": "non-ocr",
+      "pages": 40,
+      "total_native_alphanumeric_chars": 100903,
+      "max_image_area_fraction": 0.0278,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/2415952.pdf",
+      "path": "pdf/non-ocr/2415952.pdf",
+      "bytes": 280209,
+      "sha256": "4deea8e2e197b80e94249571c922cb02e0dabaa8d907b4faa0903a0feb38bb9f",
+      "classification": "non-ocr",
+      "pages": 2,
+      "total_native_alphanumeric_chars": 2512,
+      "max_image_area_fraction": 0.0965,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1344744.pdf",
+      "path": "pdf/non-ocr/1344744.pdf",
+      "bytes": 153267,
+      "sha256": "2b5d58b1ac627a78549d4978ee6a2ce2a6fd9863e86d01f1a992f47f8deda784",
+      "classification": "non-ocr",
+      "pages": 7,
+      "total_native_alphanumeric_chars": 12287,
+      "max_image_area_fraction": 0.021,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    },
+    {
+      "source": "pdf/1286581.pdf",
+      "path": "pdf/non-ocr/1286581.pdf",
+      "bytes": 187940,
+      "sha256": "297ca8d9d44222645e25b2a114e91d9dbec5e45a1c2d714783ec11c5463bd46e",
+      "classification": "non-ocr",
+      "pages": 2,
+      "total_native_alphanumeric_chars": 4130,
+      "max_image_area_fraction": 0.0142,
+      "verification": "usable embedded text on every nonblank page; no large raster regions"
+    }
+  ],
+  "classification_method": {
+    "native_text_min_alphanumeric_chars_per_page": 80,
+    "non_ocr_max_image_area_fraction_per_page": 0.12,
+    "ocr_candidate_min_image_area_fraction": 0.35,
+    "ocr_verification": "Apple Vision accurate recognition on a rendered low-text page",
+    "ocr_min_recognized_alphanumeric_chars": 80,
+    "ocr_min_novel_alphanumeric_chars": 60,
+    "ocr_includes_mixed_documents": true
+  }
+}

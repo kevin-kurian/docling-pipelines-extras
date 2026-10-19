@@ -1,0 +1,227 @@
+{
+  "source": {
+    "repo_id": "docling-project/performance-dataset-bo10k",
+    "revision": "760d04c4855ad06a2715fabe07ba6c98d472aa1e"
+  },
+  "classification": "ocr",
+  "classification_is_derived": true,
+  "summary": {
+    "documents": 10,
+    "pages": 99,
+    "bytes": 18518352
+  },
+  "files": [
+    {
+      "source": "pdf/2165788.pdf",
+      "path": "pdf/ocr/2165788.pdf",
+      "bytes": 253511,
+      "sha256": "45d5606b96e8e23a0ebea19deeccfec4cb97f99907ca7e532ffd5cc302c4c5e7",
+      "classification": "ocr",
+      "pages": 1,
+      "total_native_alphanumeric_chars": 25,
+      "native_text_pages": 0,
+      "raster_low_text_pages": [
+        1
+      ],
+      "verified_ocr_page": 1,
+      "verified_ocr_alphanumeric_chars": 1893,
+      "verified_novel_alphanumeric_chars": 1828,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": false
+    },
+    {
+      "source": "pdf/2050592.pdf",
+      "path": "pdf/ocr/2050592.pdf",
+      "bytes": 2952088,
+      "sha256": "421dd36bd134752c1d458dc605e2254057b0b26c9416b30e28e86d5cfa5fe194",
+      "classification": "ocr",
+      "pages": 33,
+      "total_native_alphanumeric_chars": 6768,
+      "native_text_pages": 23,
+      "raster_low_text_pages": [
+        6,
+        8,
+        9,
+        15,
+        20,
+        23,
+        27,
+        28,
+        29
+      ],
+      "verified_ocr_page": 6,
+      "verified_ocr_alphanumeric_chars": 2008,
+      "verified_novel_alphanumeric_chars": 1992,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/1515842.pdf",
+      "path": "pdf/ocr/1515842.pdf",
+      "bytes": 7205023,
+      "sha256": "30e0a4b253c68274936a9e692a7347ede1b54d1c0e54c8d1051fd7827e798dbe",
+      "classification": "ocr",
+      "pages": 16,
+      "total_native_alphanumeric_chars": 17549,
+      "native_text_pages": 7,
+      "raster_low_text_pages": [
+        5,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        15
+      ],
+      "verified_ocr_page": 5,
+      "verified_ocr_alphanumeric_chars": 224,
+      "verified_novel_alphanumeric_chars": 216,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/2349089.pdf",
+      "path": "pdf/ocr/2349089.pdf",
+      "bytes": 2755086,
+      "sha256": "4bc290b77306d393e65126469e134bbb2f1199892bd5b9d0cfc67a0e0f1d3696",
+      "classification": "ocr",
+      "pages": 13,
+      "total_native_alphanumeric_chars": 6909,
+      "native_text_pages": 11,
+      "raster_low_text_pages": [
+        4,
+        13
+      ],
+      "verified_ocr_page": 13,
+      "verified_ocr_alphanumeric_chars": 94,
+      "verified_novel_alphanumeric_chars": 77,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/1332696.pdf",
+      "path": "pdf/ocr/1332696.pdf",
+      "bytes": 232490,
+      "sha256": "2af7ebca0c5d4ed1788a1fe2ebe1afc5212b25db01e9ca19b5bb77885a1c8579",
+      "classification": "ocr",
+      "pages": 1,
+      "total_native_alphanumeric_chars": 0,
+      "native_text_pages": 0,
+      "raster_low_text_pages": [
+        1
+      ],
+      "verified_ocr_page": 1,
+      "verified_ocr_alphanumeric_chars": 92,
+      "verified_novel_alphanumeric_chars": 91,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": false
+    },
+    {
+      "source": "pdf/1620102.pdf",
+      "path": "pdf/ocr/1620102.pdf",
+      "bytes": 798140,
+      "sha256": "343fc2de5bd71f2d752cf7f978047e68406e718182e937e9fc50cd63990ae0cf",
+      "classification": "ocr",
+      "pages": 3,
+      "total_native_alphanumeric_chars": 1746,
+      "native_text_pages": 2,
+      "raster_low_text_pages": [
+        3
+      ],
+      "verified_ocr_page": 3,
+      "verified_ocr_alphanumeric_chars": 2492,
+      "verified_novel_alphanumeric_chars": 2305,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/2129316.pdf",
+      "path": "pdf/ocr/2129316.pdf",
+      "bytes": 1477713,
+      "sha256": "44a6f5ed50cfa2e67b7156b4979e944f3ceb5ae9ab0cf7bfb20f784440077fd3",
+      "classification": "ocr",
+      "pages": 9,
+      "total_native_alphanumeric_chars": 8283,
+      "native_text_pages": 6,
+      "raster_low_text_pages": [
+        1,
+        2,
+        3
+      ],
+      "verified_ocr_page": 2,
+      "verified_ocr_alphanumeric_chars": 1078,
+      "verified_novel_alphanumeric_chars": 1073,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/1247804.pdf",
+      "path": "pdf/ocr/1247804.pdf",
+      "bytes": 2020614,
+      "sha256": "283ee7b4a294f865714208c3393681bbac8d178258f077a6a6eec6f77571e880",
+      "classification": "ocr",
+      "pages": 17,
+      "total_native_alphanumeric_chars": 3240,
+      "native_text_pages": 12,
+      "raster_low_text_pages": [
+        7,
+        11,
+        13,
+        14,
+        15
+      ],
+      "verified_ocr_page": 7,
+      "verified_ocr_alphanumeric_chars": 895,
+      "verified_novel_alphanumeric_chars": 886,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    },
+    {
+      "source": "pdf/2220333.pdf",
+      "path": "pdf/ocr/2220333.pdf",
+      "bytes": 359323,
+      "sha256": "479afc6b4741ba0b1fce3529df833e9d5ca4140e8f9782ddbe057b83ea28c2d6",
+      "classification": "ocr",
+      "pages": 1,
+      "total_native_alphanumeric_chars": 19,
+      "native_text_pages": 0,
+      "raster_low_text_pages": [
+        1
+      ],
+      "verified_ocr_page": 1,
+      "verified_ocr_alphanumeric_chars": 509,
+      "verified_novel_alphanumeric_chars": 482,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": false
+    },
+    {
+      "source": "pdf/2331750.pdf",
+      "path": "pdf/ocr/2331750.pdf",
+      "bytes": 464364,
+      "sha256": "4b3415791e08cd77e8395033d610043d9c6e512255b685aaaaf1de61eb65a4f8",
+      "classification": "ocr",
+      "pages": 5,
+      "total_native_alphanumeric_chars": 6818,
+      "native_text_pages": 4,
+      "raster_low_text_pages": [
+        5
+      ],
+      "verified_ocr_page": 5,
+      "verified_ocr_alphanumeric_chars": 468,
+      "verified_novel_alphanumeric_chars": 467,
+      "verification": "Apple Vision recovered substantial text absent from the embedded text layer",
+      "mixed": true
+    }
+  ],
+  "classification_method": {
+    "native_text_min_alphanumeric_chars_per_page": 80,
+    "non_ocr_max_image_area_fraction_per_page": 0.12,
+    "ocr_candidate_min_image_area_fraction": 0.35,
+    "ocr_verification": "Apple Vision accurate recognition on a rendered low-text page",
+    "ocr_min_recognized_alphanumeric_chars": 80,
+    "ocr_min_novel_alphanumeric_chars": 60,
+    "ocr_includes_mixed_documents": true
+  }
+}
