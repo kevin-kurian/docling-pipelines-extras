@@ -1,18 +1,17 @@
-# IDE files
+# IDE Files
 /.idea/
 
-# macOS metadata
+# MacOS Files
 .DS_Store
 
-# Local environment
+# Environment Files
 .env
 
+# Python Files
 __pycache__/
+
+# Codebase Files
 results/
-
-# Workspace Files
 /docling-pipelines
-
-# Dataset Files
-/datasets/100-text-files/text/
 /datasets/10-pdf-files/pdf/
+/datasets/100-text-files/text/
