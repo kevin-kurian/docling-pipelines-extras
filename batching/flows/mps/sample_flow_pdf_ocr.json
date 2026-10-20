@@ -1,0 +1,111 @@
+{
+  "flow_name": "sample_flow_pdf_ocr_mps",
+  "global_config": {
+    "force_ingest": true,
+    "data_storage_type": "local",
+    "enable_micro_batching": false
+  },
+  "flow": [
+    {
+      "type": "ingest_source",
+      "name": "ingest_with_filesystem",
+      "config": {
+        "include_filter": "pdf",
+        "provider": "filesystem",
+        "provider_config": {
+          "recursive": false,
+          "paths": [
+            "/documents/ocr"
+          ]
+        }
+      }
+    },
+    {
+      "type": "extract_operator",
+      "name": "extract_with_docling_serve",
+      "config": {
+        "max_workers": 1,
+        "text_extraction": {
+          "provider": "docling_serve",
+          "provider_config": {
+            "base_url": "http://host.docker.internal:5001",
+            "ocr": {
+              "enabled": true,
+              "engine": "ocrmac"
+            }
+          }
+        }
+      },
+      "depends_on": [
+        "ingest_with_filesystem"
+      ]
+    },
+    {
+      "type": "chunker",
+      "name": "chunker_with_docling_serve",
+      "config": {
+        "chunk_type": "hybrid",
+        "chunk_size": 512,
+        "provider": "docling_serve",
+        "provider_config": {
+          "api_base": "http://host.docker.internal:5001"
+        }
+      },
+      "depends_on": [
+        "extract_with_docling_serve"
+      ]
+    },
+    {
+      "type": "embeddings",
+      "name": "embeddings_with_ollama",
+      "config": {
+        "provider": "litellm",
+        "provider_config": {
+          "model_id": "openai/nomic-embed-text",
+          "api_base": "http://host.docker.internal:11434/v1",
+          "api_key": "placeholder"
+        }
+      },
+      "depends_on": [
+        "chunker_with_docling_serve"
+      ]
+    },
+    {
+      "type": "vectordb",
+      "name": "vectordb_with_opensearch",
+      "config": {
+        "provider": "opensearch",
+        "provider_config": {
+          "index_name": "docling-pipelines-extras-batching",
+          "host": "opensearch",
+          "port": 9200,
+          "username": "${OPENSEARCH_USERNAME}",
+          "password": "${OPENSEARCH_PASSWORD}",
+          "use_ssl": false,
+          "verify_certs": false
+        },
+        "feature_mappings": [
+          {
+            "feature_name": "doc_id_hash",
+            "mapped_column_name": "id"
+          },
+          {
+            "feature_name": "name",
+            "mapped_column_name": "name"
+          },
+          {
+            "feature_name": "content",
+            "mapped_column_name": "content"
+          },
+          {
+            "feature_name": "embeddings",
+            "mapped_column_name": "embeddings"
+          }
+        ]
+      },
+      "depends_on": [
+        "embeddings_with_ollama"
+      ]
+    }
+  ]
+}

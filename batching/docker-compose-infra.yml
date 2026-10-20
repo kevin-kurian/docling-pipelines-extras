@@ -1,0 +1,52 @@
+services:
+  docling-serve:
+    image: ghcr.io/docling-project/docling-serve-cpu:v1.37.0
+    environment:
+      DOCLING_SERVE_SYNC_POLL_INTERVAL: "1"
+    ports:
+      - "5001:5001"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:5001/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  ollama:
+    image: ollama/ollama:0.34.1
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  opensearch:
+    image: opensearchproject/opensearch:3.8.0
+    environment:
+      discovery.type: single-node
+      plugins.security.ssl.http.enabled: "false"
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_PASSWORD:?Set OPENSEARCH_PASSWORD}
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs -u \"admin:$$OPENSEARCH_INITIAL_ADMIN_PASSWORD\" \"http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  ollama-data:
+  opensearch-data:
