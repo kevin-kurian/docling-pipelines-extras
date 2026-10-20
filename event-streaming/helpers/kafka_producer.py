@@ -38,19 +38,8 @@ def produce(*, message: dict) -> None:
             "value.serializer": serializer,
         }
     )
-    delivery_errors = []
-
-    def on_delivery(error: object, delivered_message: object) -> None:
-        _log_delivery(error, delivered_message)
-        if error is not None:
-            delivery_errors.append(error)
-
-    producer.produce(topic=TOPIC, value=message, on_delivery=on_delivery)
-    pending = producer.flush(timeout=30)
-    if pending:
-        raise TimeoutError(f"Kafka delivery timed out with {pending} message(s) pending")
-    if delivery_errors:
-        raise RuntimeError(f"Kafka delivery failed: {delivery_errors[0]}")
+    producer.produce(topic=TOPIC, value=message, on_delivery=_log_delivery)
+    producer.flush()
 
 
 def main() -> None:

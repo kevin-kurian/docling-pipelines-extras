@@ -17,7 +17,7 @@ services:
     volumes:
       - kafka-data:/var/lib/kafka/data
     healthcheck:
-      test: [ "CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "kafka:29092" ]
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "kafka:29092"]
       interval: 5s
       timeout: 5s
       retries: 12
@@ -29,7 +29,7 @@ services:
       KAFKA_INPUT_TOPIC: ${KAFKA_INPUT_TOPIC:?Set KAFKA_INPUT_TOPIC}
     volumes:
       - ./scripts/kafka-init.sh:/kafka-init.sh:ro
-    entrypoint: [ "/bin/sh", "/kafka-init.sh" ]
+    entrypoint: ["/bin/sh", "/kafka-init.sh"]
     depends_on:
       kafka:
         condition: service_healthy
@@ -43,7 +43,7 @@ services:
     ports:
       - "8081:8081"
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "--silent", "--show-error", "--output", "/dev/null", "http://localhost:8081/subjects" ]
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--output", "/dev/null", "http://localhost:8081/subjects"]
       interval: 5s
       timeout: 5s
       retries: 12
