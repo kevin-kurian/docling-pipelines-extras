@@ -1,6 +1,9 @@
 # IDE files
 /.idea/
 
+# macOS metadata
+.DS_Store
+
 # Local environment
 .env
 
