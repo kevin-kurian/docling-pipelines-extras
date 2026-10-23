@@ -1,3 +1,6 @@
+include:
+  - docker-compose-infra.yml
+
 services:
   docpipe:
     image: kevin1kurian/docling-pipelines:v2.0.1-cpu
@@ -16,8 +19,8 @@ services:
       - docpipe-data:/data
       - docpipe-data:/opt/app-root/data
       - docpipe-data:/opt/app-root/src/data
-      - ../datasets/10-pdf-files/pdf:/documents:ro
-      - ../datasets/100-text-files/text:/text-documents:ro
+      - ../datasets/10-pdf-files/pdf:/documents/pdf:ro
+      - ../datasets/100-text-files/text:/documents/text:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
       interval: 30s

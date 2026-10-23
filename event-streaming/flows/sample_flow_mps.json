@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow_pdf_non_ocr_mps",
+  "flow_name": "sample_flow_mps",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -10,12 +10,12 @@
       "type": "ingest_source",
       "name": "ingest_with_filesystem",
       "config": {
-        "include_filter": "pdf",
+        "include_filter": "txt,pdf",
         "provider": "filesystem",
         "provider_config": {
-          "recursive": false,
           "paths": [
-            "/documents/non-ocr"
+            "/documents",
+            "/text-documents"
           ]
         }
       }
@@ -30,7 +30,7 @@
           "provider_config": {
             "base_url": "http://host.docker.internal:5001",
             "ocr": {
-              "enabled": false,
+              "enabled": true,
               "engine": "ocrmac"
             }
           }
@@ -76,7 +76,7 @@
       "config": {
         "provider": "opensearch",
         "provider_config": {
-          "index_name": "docling-pipelines-extras-batching",
+          "index_name": "docling-pipelines-extras-event-streaming",
           "host": "opensearch",
           "port": 9200,
           "username": "${OPENSEARCH_USERNAME}",

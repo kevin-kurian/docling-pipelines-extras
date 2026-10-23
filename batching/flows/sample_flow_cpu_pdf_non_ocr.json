@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow_streaming_mps",
+  "flow_name": "sample_flow_cpu_pdf_non_ocr",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -10,12 +10,12 @@
       "type": "ingest_source",
       "name": "ingest_with_filesystem",
       "config": {
-        "include_filter": "txt,pdf",
+        "include_filter": "pdf",
         "provider": "filesystem",
         "provider_config": {
+          "recursive": false,
           "paths": [
-            "/documents",
-            "/text-documents"
+            "/documents/pdf/non-ocr"
           ]
         }
       }
@@ -28,10 +28,10 @@
         "text_extraction": {
           "provider": "docling_serve",
           "provider_config": {
-            "base_url": "http://host.docker.internal:5001",
+            "base_url": "http://docling-serve:5001",
             "ocr": {
-              "enabled": true,
-              "engine": "ocrmac"
+              "enabled": false,
+              "engine": "rapidocr"
             }
           }
         }
@@ -48,7 +48,7 @@
         "chunk_size": 512,
         "provider": "docling_serve",
         "provider_config": {
-          "api_base": "http://host.docker.internal:5001"
+          "api_base": "http://docling-serve:5001"
         }
       },
       "depends_on": [
@@ -62,7 +62,7 @@
         "provider": "litellm",
         "provider_config": {
           "model_id": "openai/nomic-embed-text",
-          "api_base": "http://host.docker.internal:11434/v1",
+          "api_base": "http://ollama:11434/v1",
           "api_key": "placeholder"
         }
       },
@@ -76,7 +76,7 @@
       "config": {
         "provider": "opensearch",
         "provider_config": {
-          "index_name": "docling-pipelines-extras-event-streaming",
+          "index_name": "docling-pipelines-extras-batching",
           "host": "opensearch",
           "port": 9200,
           "username": "${OPENSEARCH_USERNAME}",

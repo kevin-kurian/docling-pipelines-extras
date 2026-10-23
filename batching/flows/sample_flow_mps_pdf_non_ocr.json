@@ -1,5 +1,5 @@
 {
-  "flow_name": "sample_flow_pdf_ocr_mps",
+  "flow_name": "sample_flow_mps_pdf_non_ocr",
   "global_config": {
     "force_ingest": true,
     "data_storage_type": "local",
@@ -15,7 +15,7 @@
         "provider_config": {
           "recursive": false,
           "paths": [
-            "/documents/ocr"
+            "/documents/pdf/non-ocr"
           ]
         }
       }
@@ -30,7 +30,7 @@
           "provider_config": {
             "base_url": "http://host.docker.internal:5001",
             "ocr": {
-              "enabled": true,
+              "enabled": false,
               "engine": "ocrmac"
             }
           }

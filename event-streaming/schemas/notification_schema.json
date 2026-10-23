@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Notification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "job_run_id",
+    "operation",
+    "status",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID of the input event that caused this notification"
+    },
+    "job_run_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid",
+      "description": "UUID of the submitted job run, or null before a run is created"
+    },
+    "operation": {
+      "type": "string",
+      "description": "Name of the operator or event processing stage associated with this notification"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Started",
+        "Completed",
+        "Notify"
+      ],
+      "description": "Lifecycle status of the operator or event processing stage"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Local time when the notification was created, including its timezone offset"
+    }
+  }
+}
