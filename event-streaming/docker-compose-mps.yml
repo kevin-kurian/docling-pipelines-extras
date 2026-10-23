@@ -1,0 +1,35 @@
+services:
+  docpipe:
+    image: docling-pipelines:v2.0.1-cpu-streaming-p1
+    ports:
+      - "8080:8080"
+    environment:
+      DOCPIPE_DATA_PATH: /data
+      FLOW_REPOSITORY_BASE_DIR: /data/flows
+      HF_HOME: /data/models/huggingface
+      OLLAMA_HOST: http://host.docker.internal:11434
+      OPENSEARCH_HOST: opensearch
+      OPENSEARCH_USERNAME: admin
+      OPENSEARCH_PASSWORD: ${OPENSEARCH_PASSWORD:?Set OPENSEARCH_PASSWORD}
+      DOCPIPE_EVENT_STREAMING_ENABLED: ${DOCPIPE_EVENT_STREAMING_ENABLED:?Set DOCPIPE_EVENT_STREAMING_ENABLED}
+      DOCPIPE_API_BASE_URL: ${DOCPIPE_API_BASE_URL:?Set DOCPIPE_API_BASE_URL}
+      DOCPIPE_MAX_CONCURRENT_JOB_RUNS: ${DOCPIPE_MAX_CONCURRENT_JOB_RUNS:?Set DOCPIPE_MAX_CONCURRENT_JOB_RUNS}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_INPUT_TOPIC: ${KAFKA_INPUT_TOPIC:?Set KAFKA_INPUT_TOPIC}
+      KAFKA_NOTIFICATION_TOPIC: ${KAFKA_NOTIFICATION_TOPIC:?Set KAFKA_NOTIFICATION_TOPIC}
+      KAFKA_GROUP_ID: ${KAFKA_GROUP_ID:?Set KAFKA_GROUP_ID}
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    volumes:
+      - docpipe-data:/data
+      - docpipe-data:/opt/app-root/data
+      - docpipe-data:/opt/app-root/src/data
+      - ../datasets/10-pdf-files/pdf:/documents:ro
+      - ../datasets/100-text-files/text:/text-documents:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+volumes:
+  docpipe-data:
