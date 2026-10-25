@@ -1,0 +1,154 @@
+{
+  "source": {
+    "repo_id": "MohammadOthman/20-News-Groups",
+    "revision": "e7372c450f16b5804b31eac635acf46ea6823936",
+    "archive": "20newsbydate.zip"
+  },
+  "purpose": "measured",
+  "classification": "text",
+  "selection": {
+    "target_characters_per_document": 30000,
+    "minimum_characters": 27001,
+    "maximum_characters": 33000,
+    "characters_per_estimated_page": 3000,
+    "unmodified_source_documents": true
+  },
+  "summary": {
+    "documents": 10,
+    "bytes": 291477,
+    "characters": 291477,
+    "estimated_pages": 103,
+    "min_characters_per_document": 27760,
+    "max_characters_per_document": 31093,
+    "topics": 9
+  },
+  "files": [
+    {
+      "source": "20newsbydate/20news-bydate-test/comp.windows.x/67462",
+      "path": "text/comp.windows.x__67462.txt",
+      "bytes": 30024,
+      "sha256": "eeeda3fdf5498782da54103796d5e8e0b3e7e2a764c91a903a573aca5cd63a6f",
+      "topic": "comp.windows.x",
+      "characters": 30024,
+      "estimated_pages": 11
+    },
+    {
+      "source": "20newsbydate/20news-bydate-test/sci.crypt/16123",
+      "path": "text/sci.crypt__16123.txt",
+      "bytes": 29245,
+      "sha256": "289e0ee88cc66e202d164cd2390119d8e1cfede7c920b1b499dc6f2dbc9a259a",
+      "topic": "sci.crypt",
+      "characters": 29245,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-test/soc.religion.christian/21565",
+      "path": "text/soc.religion.christian__21565.txt",
+      "bytes": 31093,
+      "sha256": "9f5763f15ecbc8fd79a3e9fa4739793aa4c79b6be7c34e5318255e2bd071a0b8",
+      "topic": "soc.religion.christian",
+      "characters": 31093,
+      "estimated_pages": 11
+    },
+    {
+      "source": "20newsbydate/20news-bydate-test/talk.politics.mideast/77811",
+      "path": "text/talk.politics.mideast__77811.txt",
+      "bytes": 27780,
+      "sha256": "3bfee60a89c54a81f8b008502840fb3ddc1fe2a38d8cff976d6ed380a981e488",
+      "topic": "talk.politics.mideast",
+      "characters": 27780,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-test/talk.politics.misc/179054",
+      "path": "text/talk.politics.misc__179054.txt",
+      "bytes": 28502,
+      "sha256": "0cac735ae14fe5291315499385bdebf6c4178585b3204f16132c79ada124da50",
+      "topic": "talk.politics.misc",
+      "characters": 28502,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/comp.windows.x/66868",
+      "path": "text/comp.windows.x__66868.txt",
+      "bytes": 29609,
+      "sha256": "f7b35dc3212f5246c2832663fd67cd38045ed6e249e282ff4c473a9becb72469",
+      "topic": "comp.windows.x",
+      "characters": 29609,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/rec.autos/102764",
+      "path": "text/rec.autos__102764.txt",
+      "bytes": 27760,
+      "sha256": "4b9abcc6f7ed6618475d5fb56e92bde7c125b1ccf36a51d38abda8b11e4779e6",
+      "topic": "rec.autos",
+      "characters": 27760,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.med/59123",
+      "path": "text/sci.med__59123.txt",
+      "bytes": 30374,
+      "sha256": "e94932c0107fdf667753f6f18f9261af0d3455a63c1e086dc69a9b5eecdb7739",
+      "topic": "sci.med",
+      "characters": 30374,
+      "estimated_pages": 11
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/sci.space/61244",
+      "path": "text/sci.space__61244.txt",
+      "bytes": 28039,
+      "sha256": "8b9c9d615cb6d236e294a011018787dba864cfa5cd5dc6662a57a0d4aadcd2c8",
+      "topic": "sci.space",
+      "characters": 28039,
+      "estimated_pages": 10
+    },
+    {
+      "source": "20newsbydate/20news-bydate-train/talk.religion.misc/82810",
+      "path": "text/talk.religion.misc__82810.txt",
+      "bytes": 29051,
+      "sha256": "ab23835aee862925a2ded2e536603fdf4113539c49c5c6b94aa16a62b21b7423",
+      "topic": "talk.religion.misc",
+      "characters": 29051,
+      "estimated_pages": 10
+    }
+  ],
+  "warmup": {
+    "source": {
+      "repo_id": "MohammadOthman/20-News-Groups",
+      "revision": "e7372c450f16b5804b31eac635acf46ea6823936",
+      "archive": "20newsbydate.zip"
+    },
+    "purpose": "warmup",
+    "classification": "text",
+    "excluded_from_measured_dataset": true,
+    "selection": {
+      "target_characters_per_document": 30000,
+      "minimum_characters": 27001,
+      "maximum_characters": 33000,
+      "characters_per_estimated_page": 3000,
+      "unmodified_source_documents": true
+    },
+    "summary": {
+      "documents": 1,
+      "bytes": 31342,
+      "characters": 31342,
+      "estimated_pages": 11,
+      "min_characters_per_document": 31342,
+      "max_characters_per_document": 31342,
+      "topics": 1
+    },
+    "files": [
+      {
+        "source": "20newsbydate/20news-bydate-train/comp.sys.ibm.pc.hardware/58862",
+        "path": "text/warmup/comp.sys.ibm.pc.hardware__58862.txt",
+        "bytes": 31342,
+        "sha256": "b62ac6db2bd5a1a235a1bcb2ee3c9d5b98dfc1fa03e5b0f259ea88a06d52973e",
+        "topic": "comp.sys.ibm.pc.hardware",
+        "characters": 31342,
+        "estimated_pages": 11
+      }
+    ]
+  }
+}
