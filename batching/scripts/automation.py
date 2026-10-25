@@ -41,7 +41,7 @@ def _error_text(error: BaseException) -> str:
 
 
 def create_run_directory(*, flow_file: Path, output_dir: Path) -> Path:
-    stamp = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y-%m-%d_%H-%M-%S")
+    stamp = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y%m%d_%H%M%S")
     run_dir = output_dir / f"{stamp}_{flow_file.stem}"
     run_dir.mkdir(parents=True)
     return run_dir
@@ -59,7 +59,7 @@ class BatchAutomation:
         self.cpu_compose_file = self.batching_dir / "docker-compose-cpu.yml"
         self.mps_compose_file = self.batching_dir / "docker-compose-mps.yml"
         self.base_url = os.environ["DOCPIPE_API_BASE_URL"].rstrip("/")
-        self.timestamp = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y-%m-%d_%H-%M-%S")
+        self.timestamp = datetime.now(ZoneInfo("Asia/Kolkata")).strftime("%Y%m%d_%H%M%S")
         self.summary_dir = DEFAULT_OUTPUT_DIR / f"{self.timestamp}_suite"
         self.summary_dir.mkdir(parents=True)
         self.processes: dict[str, subprocess.Popen] = {}
@@ -396,14 +396,25 @@ class BatchAutomation:
 
     def _capture_logs(self, *, run: BatchRunResult) -> None:
         try:
-            logs = self._run_compose(
+            container_names = self._run_compose(
                 compose_file=self.batching_dir / f"docker-compose-{run.environment}.yml",
-                arguments=["logs", "--no-color", "--timestamps", "--tail", "2000"],
+                arguments=["ps", "--all", "--format", "{{.Name}}"],
                 timeout_seconds=30,
-            )
+            ).splitlines()
             log_dir = run.output_dir / "_logs"
             log_dir.mkdir(parents=True, exist_ok=True)
-            (log_dir / "services.log").write_text(logs, encoding="utf-8")
+            for name in container_names:
+                try:
+                    with (log_dir / f"{name}.log").open("wb") as output:
+                        subprocess.run(
+                            ["docker", "--context", "colima", "logs", name],
+                            stdout=output,
+                            stderr=subprocess.STDOUT,
+                            check=True,
+                            timeout=30,
+                        )
+                except Exception as error:
+                    run.diagnostic_errors.append(f"{name} logs: {_error_text(error)}")
         except Exception as error:
             run.diagnostic_errors.append(f"service logs: {_error_text(error)}")
 

@@ -1,45 +1,63 @@
-# Event streaming benchmarks
-
-Run commands from the repository root. Requires Apple Silicon macOS, Colima running,
-and Ollama installed.
+# Event streaming
 
 ## Setup
 
-```bash
+```sh
+colima start
+uv sync --locked --extra event-streaming --extra mps
 cp -n event-streaming/.env.example event-streaming/.env
-uv sync --locked --python 3.12 --extra event-streaming --extra mps
+```
+
+## Build
+
+```sh
+docker --context colima build --platform linux/amd64 -f event-streaming/Dockerfile \
+  --build-arg COMPUTE_BACKEND=cpu \
+  -t "kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-<date>" ../docling-pipelines
+```
+
+## Environment
+
+```sh
 source .venv/bin/activate
-```
-
-Set `OPENSEARCH_PASSWORD` in `event-streaming/.env`. GPU collection requires sudo authorization.
-Load the environment in your shell before running any command below:
-
-```bash
 set -a
-source event-streaming/.env
+. event-streaming/.env
 set +a
+export PYTHONPATH=event-streaming
 ```
 
-## Run all
+## CPU / MPS
 
-Runs CPU and MPS with OCR PDF, non-OCR PDF, and text:
-
-```bash
-python -m event-streaming.scripts.automation
+```sh
+python -m scripts.automation --environment cpu --type ocr
 ```
 
-## Run three CPU cases
+### Options
 
-```bash
-python -m event-streaming.scripts.automation \
-  --environment cpu \
-  --file-type pdf_ocr pdf_non_ocr text
+| Option           | Value                                    |
+|------------------|------------------------------------------|
+| `--environment`  | `cpu`, `mps`; required                   |
+| `--type`         | `ocr`, `non-ocr`, `text`; required       |
+| `--results-root` | Path; default: `event-streaming/results` |
+| `--help`         |                                          |
+
+## Suite
+
+```sh
+python -m scripts.automation --suite all
 ```
 
-## Run one case
+### Options
 
-```bash
-python -m event-streaming.scripts.automation --environment cpu --file-type text
-```
+| Option           | Value                                                   |
+|------------------|---------------------------------------------------------|
+| `--suite`        | `cpu`, `mps`, `all`, `non-ocr`, `ocr`, `text`; required |
+| `--results-root` | Path; default: `event-streaming/results`                |
+| `--help`         |                                                         |
 
-Use `--environment mps` for MPS. Defaults: 10 events per PDF case, 100 per text case.
+## ToDo
+- Add Run Name/Details to Results HTML 
+- Organize Scripts Package
+- Add Consolidate Results HTML for Suit Runs
+- Cleanup Batching using the New Scripts Structure
+- Add Resource Monitoring in Scripts

@@ -28,10 +28,6 @@ services:
       retries: 3
       start_period: 60s
     depends_on:
-      docling-serve:
-        condition: service_healthy
-      ollama:
-        condition: service_healthy
       opensearch:
         condition: service_healthy
 

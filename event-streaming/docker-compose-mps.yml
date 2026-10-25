@@ -1,6 +1,10 @@
+include:
+  - docker-compose-infra.yml
+
 services:
   docpipe:
-    image: docling-pipelines:v2.0.1-cpu-streaming-p1
+    image: kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-20261025-patch
+    platform: linux/amd64
     ports:
       - "8080:8080"
     environment:
@@ -12,8 +16,8 @@ services:
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: ${OPENSEARCH_PASSWORD:?Set OPENSEARCH_PASSWORD}
       DOCPIPE_EVENT_STREAMING_ENABLED: ${DOCPIPE_EVENT_STREAMING_ENABLED:?Set DOCPIPE_EVENT_STREAMING_ENABLED}
-      DOCPIPE_API_BASE_URL: ${DOCPIPE_API_BASE_URL:?Set DOCPIPE_API_BASE_URL}
-      DOCPIPE_MAX_CONCURRENT_JOB_RUNS: ${DOCPIPE_MAX_CONCURRENT_JOB_RUNS:?Set DOCPIPE_MAX_CONCURRENT_JOB_RUNS}
+      DOCPIPE_JOB_WORKERS: "1"
+      DOCPIPE_API_BASE_URL: ${DOCPIPE_API_BASE_URL:-http://127.0.0.1:8080}
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       KAFKA_INPUT_TOPIC: ${KAFKA_INPUT_TOPIC:?Set KAFKA_INPUT_TOPIC}
       KAFKA_NOTIFICATION_TOPIC: ${KAFKA_NOTIFICATION_TOPIC:?Set KAFKA_NOTIFICATION_TOPIC}
@@ -23,13 +27,16 @@ services:
       - docpipe-data:/data
       - docpipe-data:/opt/app-root/data
       - docpipe-data:/opt/app-root/src/data
-      - ../datasets/10-pdf-files/pdf:/documents:ro
-      - ../datasets/100-text-files/text:/text-documents:ro
+      - ../datasets:/documents:ro
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
+    depends_on:
+      opensearch:
+        condition: service_healthy
+
 volumes:
   docpipe-data:
