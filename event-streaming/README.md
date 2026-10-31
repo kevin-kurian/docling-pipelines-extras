@@ -4,7 +4,7 @@
 
 ```sh
 colima start
-uv sync --locked --extra event-streaming --extra mps
+uv sync --locked --all-extras
 cp -n event-streaming/.env.example event-streaming/.env
 ```
 
@@ -27,6 +27,8 @@ export PYTHONPATH=event-streaming
 ```
 
 ## CPU / MPS
+
+MPS automation starts native Ollama on port `11435` to avoid conflicts with an existing Ollama server on port `11434`.
 
 ```sh
 python -m scripts.automation --environment cpu --type ocr

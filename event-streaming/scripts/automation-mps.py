@@ -85,8 +85,8 @@ class StreamingAutomation(cpu.StreamingAutomation):
 
         self._print_section("NATIVE PROCESS CREATION")
         self._start_processes(
-            name="ollama", command=["ollama", "serve"], environment={"OLLAMA_HOST": "0.0.0.0:11434"},
-            ready_url="http://localhost:11434/api/tags",
+            name="ollama", command=["ollama", "serve"], environment={"OLLAMA_HOST": "0.0.0.0:11435"},
+            ready_url="http://localhost:11435/api/tags",
         )
         self._start_processes(
             name="docling-serve", command=["docling-serve", "run", "--host", "0.0.0.0", "--port", "5001"],
@@ -103,7 +103,7 @@ class StreamingAutomation(cpu.StreamingAutomation):
 
         print("Preparing Ollama embedding model: nomic-embed-text", flush=True)
         request = Request(
-            "http://localhost:11434/api/pull",
+            "http://localhost:11435/api/pull",
             data=json.dumps({"model": "nomic-embed-text", "stream": False}).encode("utf-8"),
             headers={"Content-Type": "application/json"}, method="POST",
         )
