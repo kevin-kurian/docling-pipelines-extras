@@ -3,7 +3,7 @@ include:
 
 services:
   docpipe:
-    image: kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-20261025-patch
+    image: kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-20261030-patch
     platform: linux/amd64
     ports:
       - "8080:8080"
@@ -11,7 +11,7 @@ services:
       DOCPIPE_DATA_PATH: /data
       FLOW_REPOSITORY_BASE_DIR: /data/flows
       HF_HOME: /data/models/huggingface
-      OLLAMA_HOST: http://host.docker.internal:11434
+      OLLAMA_HOST: http://host.docker.internal:11435
       OPENSEARCH_HOST: opensearch
       OPENSEARCH_USERNAME: admin
       OPENSEARCH_PASSWORD: ${OPENSEARCH_PASSWORD:?Set OPENSEARCH_PASSWORD}

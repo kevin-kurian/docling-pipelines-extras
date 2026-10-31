@@ -3,7 +3,7 @@ include:
 
 services:
   docpipe:
-    image: kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-20261025-patch
+    image: kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-20261030-patch
     platform: linux/amd64
     ports:
       - "8080:8080"
