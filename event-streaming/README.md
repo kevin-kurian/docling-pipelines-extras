@@ -11,9 +11,14 @@ cp -n event-streaming/.env.example event-streaming/.env
 ## Build
 
 ```sh
-docker --context colima build --platform linux/amd64 -f event-streaming/Dockerfile \
-  --build-arg COMPUTE_BACKEND=cpu \
-  -t "kevin1kurian/docling-pipelines:v2.0.1-cpu-streaming-<date>" ../docling-pipelines
+docker build -f event-streaming/Dockerfile --build-arg COMPUTE_BACKEND=cpu \
+  -t "kevin1kurian/docling-pipelines:v2.1.0-cpu-streaming-<date>" ../docling-pipelines
+```
+
+## Push
+
+```sh
+docker push kevin1kurian/docling-pipelines:v2.1.0-cpu-streaming-<date>
 ```
 
 ## Environment
