@@ -17,7 +17,7 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama-data:/root/.ollama
+      - ./.cache/ollama:/root/.ollama
     healthcheck:
       test: ["CMD", "ollama", "list"]
       interval: 30s
@@ -48,5 +48,4 @@ services:
       start_period: 60s
 
 volumes:
-  ollama-data:
   opensearch-data:
