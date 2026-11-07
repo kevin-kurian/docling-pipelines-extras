@@ -3,7 +3,7 @@ include:
 
 services:
   docpipe:
-    image: kevin1kurian/docling-pipelines:v2.1.0-cpu-streaming-notify-20261106
+    image: kevin1kurian/docling-pipelines:v2.1.0-cpu-streaming-orch-notify-20261106
     ports:
       - "8080:8080"
     environment:

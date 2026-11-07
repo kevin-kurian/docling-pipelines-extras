@@ -15,3 +15,4 @@ results/
 /docling-pipelines
 /datasets/10-pdf-files/pdf/
 /datasets/10-text-files/text/
+/event-streaming/.cache/
